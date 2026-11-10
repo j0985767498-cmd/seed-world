@@ -201,6 +201,11 @@ body.game{overflow:hidden;position:fixed;inset:0;touch-action:none;overscroll-be
 #tut{left:10px;right:auto;transform:none;top:calc(84px + env(safe-area-inset-top,0px));bottom:auto;width:min(420px,calc(100vw - 92px))}
 #toast{top:calc(120px + env(safe-area-inset-top,0px));bottom:auto}
 .settings{margin-top:0;border-top:0;padding-top:0}
+.grp{border:1px solid var(--line);border-radius:14px;margin-bottom:8px;background:var(--chip)}
+.grp .grph{margin:0;border:0;background:transparent}
+.grph .chev{margin-left:auto;font-size:12px;color:var(--muted);padding-left:6px}
+.grpin{padding:0 8px 8px}
+.lotrow.inner{margin-bottom:6px}
 </style>
 </head>
 <body class="game">
@@ -618,17 +623,43 @@ function simsHTML(m,f,crop,label){return `<div class="sims"><span class="lbl">${
 function filtersHTML(cur,attr){return ['all',...CROP_KEYS].map(k=>`<button class="fchip" ${attr}="${k}" aria-pressed="${cur===k}">${k==='all'?'全部':CROPS[k].n}</button>`).join('')}
 let bagSort='new',renaming=null,selling=null;
 function lotKey(l,k){const ph=phen(l.m,l.crop);return k==='tier'?ph.tier*1000+ph.total:k==='total'?ph.total:k==='quality'?ph.quality:k==='perf'?ph.perf:k==='stab'?ph.stab:k==='count'?lc(l):0}
+const openGroups=new Set();
+function gsig(g){return LOCI.map(L=>{const v=gl(g,L.k);return v[0]<v[1]?v[0]+'/'+v[1]:v[1]+'/'+v[0]}).join(',')}
+function lotSig(l){const a=gsig(l.m),b=gsig(l.f);return l.crop+'|'+(a<b?a+'|'+b:b+'|'+a)}
+function mergeIdentical(){
+  if(!state)return 0;const seen=new Map();let merged=0;
+  for(const l of state.lots.slice()){
+    const k=lotSig(l),t=seen.get(k);
+    if(!t){seen.set(k,l);continue}
+    const nt=lc(t),nl=lc(l);
+    if(t.seeds||l.seeds){const toSeeds=x=>x.seeds?x.seeds:Array.from({length:x.count||0},()=>child(x.m,x.f).g);t.seeds=[...toSeeds(t),...toSeeds(l)];delete t.count}
+    else t.count=(t.count||0)+(l.count||0);
+    t.germ=(t.germ*nt+l.germ*nl)/Math.max(1,nt+nl);
+    for(const p of state.plots)if(p&&p.lotId===l.id)p.lotId=t.id;
+    state.lots=state.lots.filter(x=>x!==l);merged++;
+  }
+  return merged;
+}
+function grpKey(l){const ph=phen(l.m,l.crop);return [l.crop,ph.shapeName,ph.cname,ph.pat,ph.patName||'',ph.surf,ph.ratioLv,ph.twistLv].join('|')}
+function lotRow(l,inner){const ph=phen(l.m,l.crop);return `<button class="lotrow${inner?' inner':''}" data-lot="${l.id}">${fruitSVG(ph,l.crop,inner?44:52)}<span class="lr"><b>${esc(l.name)}</b><span class="meta">${inner?'':CROPS[l.crop].n+'・'}${lc(l)} 顆${inner?'':'・'+ph.shapeName+'・'+colorLabel(ph)}</span><span class="meta">品質 ${ph.quality.toFixed(1)}・完美 ${ph.perf.toFixed(1)}・總評 ${ph.total.toFixed(1)}</span><span class="badges" style="justify-content:flex-start;margin-top:2px"><span class="badge r${ph.tier}">${TIERS[ph.tier]}</span><span class="badge">${stabName(ph.stab)}</span></span></span></button>`}
 function renderBag(){
   if(!state)return;
+  if(mergeIdentical())save();
   document.getElementById('bagFilter').innerHTML=filtersHTML(uiCrop,'data-fc');
   const sel=document.getElementById('bagSort');if(sel.value!==bagSort)sel.value=bagSort;
   const el=document.getElementById('bag');
   let lots=state.lots.filter(l=>uiCrop==='all'||l.crop===uiCrop);
-  if(bagSort==='name')lots=lots.slice().sort((a,b)=>a.name.localeCompare(b.name,'zh-Hant'));
-  else if(bagSort!=='new')lots=lots.slice().sort((a,b)=>lotKey(b,bagSort)-lotKey(a,bagSort));
-  if(!lots.length){el.innerHTML='<p class="note">這裡沒有種子。採收時選擇「取種」，或到市場購買，種子就會放進這裡。</p>';return}
-  el.innerHTML=`<p class="note">共 ${lots.length} 包，點一包查看詳細資料。</p>`+lots.map(l=>{const ph=phen(l.m,l.crop);return `<button class="lotrow" data-lot="${l.id}">${fruitSVG(ph,l.crop,52)}<span class="lr"><b>${esc(l.name)}</b><span class="meta">${CROPS[l.crop].n}・${lc(l)} 顆・${ph.shapeName}・${colorLabel(ph)}</span><span class="meta">品質 ${ph.quality.toFixed(1)}・完美 ${ph.perf.toFixed(1)}・總評 ${ph.total.toFixed(1)}</span><span class="badges" style="justify-content:flex-start;margin-top:2px"><span class="badge r${ph.tier}">${TIERS[ph.tier]}</span><span class="badge">${stabName(ph.stab)}</span></span></span></button>`}).join('');
+  if(!lots.length){el.innerHTML='<p class="note">這裡沒有種子。採收時選擇「取種」，或到市集購買，種子就會放進這裡。</p>';return}
+  const cmp=bagSort==='name'?(a,b)=>a.name.localeCompare(b.name,'zh-Hant'):bagSort==='new'?(a,b)=>state.lots.indexOf(a)-state.lots.indexOf(b):(a,b)=>lotKey(b,bagSort)-lotKey(a,bagSort);
+  const groups=new Map();for(const l of lots){const k=grpKey(l);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(l)}
+  const arr=[...groups.entries()].map(([k,ls])=>{ls.sort(cmp);return {k,ls}});arr.sort((a,b)=>cmp(a.ls[0],b.ls[0]));
+  el.innerHTML=`<p class="note">共 ${lots.length} 包。長得一樣的種子會收在同一組，點開可以比較每一包的差異。</p>`+arr.map(({k,ls})=>{
+    if(ls.length===1)return lotRow(ls[0]);
+    const l0=ls[0],ph=phen(l0.m,l0.crop),total=ls.reduce((s,l)=>s+lc(l),0),bestQ=Math.max(...ls.map(l=>phen(l.m,l.crop).quality)),bestS=Math.max(...ls.map(l=>phen(l.m,l.crop).stab)),open=openGroups.has(k);
+    return `<div class="grp${open?' open':''}"><button class="lotrow grph" data-grp="${esc(k)}" aria-expanded="${open}">${fruitSVG(ph,l0.crop,52)}<span class="lr"><b>${CROPS[l0.crop].n}・${ph.shapeName}・${colorLabel(ph)}</b><span class="meta">${ls.length} 包・共 ${total} 顆・${ph.surfName}</span><span class="meta">最高品質 ${bestQ.toFixed(1)}・最穩定：${stabName(bestS)}</span></span><span class="chev" aria-hidden="true">${open?'▲':'▼'}</span></button>${open?`<div class="grpin">${ls.map(l=>lotRow(l,true)).join('')}</div>`:''}</div>`;
+  }).join('');
 }
+document.getElementById('bag').addEventListener('click',e=>{const g=e.target.closest('[data-grp]');if(!g)return;e.stopPropagation();const k=g.dataset.grp;openGroups.has(k)?openGroups.delete(k):openGroups.add(k);renderBag()},true);
 document.getElementById('bagFilter').addEventListener('click',e=>{const b=e.target.closest('[data-fc]');if(!b)return;uiCrop=b.dataset.fc;renderBag()});
 document.getElementById('bagSort').addEventListener('change',e=>{bagSort=e.target.value;renderBag()});
 document.getElementById('bag').addEventListener('click',e=>{const b=e.target.closest('[data-lot]');if(b)openLot(+b.dataset.lot)});
@@ -708,7 +739,7 @@ function infoHTML(ph,lvl,g,crop,noSims){
   if(lvl>=3){
     h+=`<div class="hero">${fruitSVG(ph,crop,130,1,descr(ph,crop))}</div><div class="chips"><span class="chip">${ph.shapeName}</span><span class="chip">${colorLabel(ph)}</span><span class="chip">${ph.surfName}</span><span class="chip">${RATIO_N[ph.ratioLv]}</span><span class="chip">${TWIST_N[ph.twistLv]}</span></div>`;
     h+=`<div class="badges"><span class="badge r${ph.tier}">${TIERS[ph.tier]}</span>${ph.quality>=80&&ph.perf>=80?'<span class="badge r3">名品</span>':''}<span class="badge">${stabName(ph.stab)}</span></div>`;
-  }else h+=`<p class="note">外觀與好吃度會在成熟時揭曉。</p>`;
+  }else h+=`<p class="note">${lvl===2?'好吃度會在成熟時揭曉。':'外觀與好吃度會在開花時揭曉。'}</p>`;
   h+=statRow('生長速度',ph.ab.speed,lvl>=1)+statRow('產量',ph.ab.yield,lvl>=2)+statRow('抗病性',ph.ab.resist,lvl>=2,'測試版沒有病蟲害，抗病性暫時沒有作用。')+statRow('好吃度',ph.ab.taste,lvl>=3);
   if(lvl>=3)h+=`<div class="scores"><div class="score"><b>${ph.quality.toFixed(1)}</b><span>品質分</span></div><div class="score"><b>${ph.perf.toFixed(1)}</b><span>${ph.shapeName}完美度</span></div><div class="score"><b>${ph.total.toFixed(1)}</b><span>總評</span></div></div>`+(noSims?'':simsHTML(g,g,crop,'如果自己留種，後代可能長這樣'));
   return h;
@@ -791,15 +822,15 @@ function renderSheet(){
     const ph=phen(p.g,p.crop),lvl=p.stage==='seedling'?1:p.stage==='ripe'?3:2;
     h+=`<h2>${esc(pname(p))}</h2><p class="stage">${CROPS[p.crop].n}・第 ${i+1} 塊土地・${stageLabel(p)}${p.pollen?`・${p.pollen.type==='cross'?`與 ${esc(p.pollen.fatherName)} 雜交`:'自己授粉'}`:''}</p>`;
     if(p.stage!=='ripe'){
-      const own=p.stage==='fruit',pm=p.m||(state.lots.find(l=>l.lid===p.lid)||{}).m,ref=own?ph:(pm?phen(pm,p.crop):null);
-      if(ref)h+=`<div class="hero">${fruitSVG(ref,p.crop,110,own?Math.max(0.15,clamp(p.prog/stageDur(p,ph),0,1)*0.4):1,own?'這株正在長的果實':'親本的樣子')}</div><p class="note" style="text-align:center">${own?'這株正在長大，顏色會在成熟時揭曉。':'這是親本的樣子。這株自己的樣子會在結果後出現，可能和親本不同。'}</p>`;
+      const own=p.stage==='fruit'||p.stage==='flower',fl=p.stage==='flower',pm=p.m||(state.lots.find(l=>l.lid===p.lid)||{}).m,ref=own?ph:(pm?phen(pm,p.crop):null);
+      if(ref)h+=`<div class="hero">${fruitSVG(ref,p.crop,110,fl?1:own?Math.max(0.15,clamp(p.prog/stageDur(p,ph),0,1)*0.4):1,fl?'這株將結出的果實':own?'這株正在長的果實':'親本的樣子')}</div><p class="note" style="text-align:center">${fl?`開花了！這株會結出：${ph.shapeName}・${colorLabel(ph)}・${ph.surfName}`:own?'這株正在長大，顏色會在成熟時揭曉。':'這是親本的樣子。這株自己的樣子會在開花時出現，可能和親本不同。'}</p>`;
       const pi=progInfo(p);h+=`<div class="bar"><i id="pbar" style="width:${pi.pct}%"></i></div><p class="note" id="ptime">${pi.txt}</p>`;
     }
     if(p.stage==='seedling'||p.stage==='fruit')h+=`<div class="row2"><button class="btn primary" data-act="water" ${p.watered?'disabled':''}>${p.watered?'已澆水':'澆水'}</button><button class="btn" data-act="fert" ${p.fert?'disabled':''}>${p.fert?'已施肥':'施肥'}</button></div>`;
     if(p.stage==='flower'){
       h+=`<p class="note" style="margin-top:12px">雜交會讓兩株的特徵重新組合；自己授粉則會讓後代越來越像這一株。只有同一種作物才能雜交。</p><button class="btn primary" data-act="self">自己授粉</button>`;
       const others=state.plots.map((q,j)=>({q,j})).filter(o=>o.q&&o.j!==i&&o.q.stage==='flower'&&o.q.crop===p.crop);
-      h+=others.length?`<p class="note" style="margin-top:12px">或選一株同時開花的${CROPS[p.crop].n}雜交（圖片是它親本的樣子）：</p>`+others.map(o=>{const qm=o.q.m||(state.lots.find(l=>l.lid===o.q.lid)||{}).m||o.q.g;return `<button class="pick" data-act="cross" data-j="${o.j}">${fruitSVG(phen(qm,o.q.crop),o.q.crop,48)}<span><b>和「${esc(pname(o.q))}」雜交</b><span class="meta">第 ${o.j+1} 塊土地・成功率約 ${Math.round(crossRate(p,o.q)*100)}%</span></span></button>`}).join(''):`<p class="note">想雜交的話，需要另一株同時開花的${CROPS[p.crop].n}。</p>`;
+      h+=others.length?`<p class="note" style="margin-top:12px">或選一株同時開花的${CROPS[p.crop].n}雜交，圖片是對方會結出的果實：</p>`+others.map(o=>{const qp=phen(o.q.g,o.q.crop);return `<button class="pick" data-act="cross" data-j="${o.j}">${fruitSVG(qp,o.q.crop,56,1,descr(qp,o.q.crop))}<span><b>和「${esc(pname(o.q))}」雜交</b><span class="meta">${qp.shapeName}・${colorLabel(qp)}・${qp.surfName}</span><span class="meta">生長 ${qp.ab.speed.toFixed(1)}・產量 ${qp.ab.yield.toFixed(1)}・抗病 ${qp.ab.resist.toFixed(1)}・${stabName(qp.stab)}</span><span class="meta">第 ${o.j+1} 塊土地・成功率約 ${Math.round(crossRate(p,o.q)*100)}%</span></span></button>`}).join(''):`<p class="note">想雜交的話，需要另一株同時開花的${CROPS[p.crop].n}。</p>`;
     }
     if(p.stage==='ripe'){
       const n=Math.max(1,Math.round(2+8*ph.ab.yield/100)),total=Math.round(n*CROPS[p.crop].price*ph.ab.taste/50);
