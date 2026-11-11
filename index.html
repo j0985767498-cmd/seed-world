@@ -230,6 +230,21 @@ body.game{background:#5E9E38}
 .grph .chev{margin-left:auto;font-size:12px;color:var(--muted);padding-left:6px}
 .grpin{padding:0 8px 8px}
 .lotrow.inner{margin-bottom:6px}
+.biome{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:2px solid #E2C796;background:#FFFDF6;border-radius:14px;padding:8px;margin-bottom:8px;color:var(--ink)}
+.biome svg{flex:none;border-radius:10px;border:2px solid #5A3416}
+.biome[aria-current="true"]{border-color:#5DBB3A;background:#F1FBE8}
+.biome b{font-size:16px;color:#5A3416}
+.items{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.itm{display:flex;gap:6px;align-items:center;background:#FFFDF6;border:2px solid #E2C796;border-radius:12px;padding:6px 8px}
+.itm svg{flex:none}
+.itm b{font-size:14px;color:#5A3416}
+.ferts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px;align-items:center}
+.ferts .lbl{font-size:13px;color:var(--muted);width:100%}
+.ybtns{display:flex;gap:8px}.ybtns .btn{flex:1;font-size:14px;padding:8px 4px}
+[data-item]{cursor:pointer}
+[data-item] .bob{animation:bob 1.8s ease-in-out infinite;transform-box:fill-box}
+@keyframes bob{50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion: reduce){[data-item] .bob{animation:none}}
 </style>
 </head>
 <body class="game">
@@ -247,6 +262,7 @@ body.game{background:#5E9E38}
   <button data-open="dex"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/><path d="M9 8h6M9 12h6"/></svg><span>圖鑑</span></button>
   <button id="ibMarket" data-do="market"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l2-6h14l2 6"/><path d="M3 10c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3s3-1.3 3-3"/><path d="M5 13v8h14v-8"/></svg><span>市集</span></button>
   <button id="ibHome" data-do="home" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span>回家</span></button>
+  <button id="ibExplore" data-open="explore"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke-width="1.2"/></svg><span>探索</span></button>
   <button data-open="social"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 15.5c2.8-.6 6 1.2 6 4.5"/></svg><span>朋友</span></button>
   <button id="ibDecor" data-open="decor"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3 2-5 5-5 8a5 5 0 0 0 10 0c0-3-2-6-5-8z"/><path d="M12 16v5M9 21h6"/></svg><span>裝飾</span></button>
   <button data-do="avatar"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>角色</span></button>
@@ -263,6 +279,7 @@ body.game{background:#5E9E38}
 <div class="panel" id="p-dex" hidden role="dialog" aria-label="品種圖鑑"><div class="ph"><h2>品種圖鑑</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><p class="note">完全穩定、而且外觀和既有品種不同的作物，才能登錄成新品種。發明者的名字會永遠留在這裡。</p><div class="filters" id="dexFilter"></div><div id="dex"></div></div></div>
 <div class="panel" id="p-social" hidden role="dialog" aria-label="朋友"><div class="ph"><h2>朋友</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><button class="btn" id="avatarBtn2" style="margin:0 0 8px">打扮我的角色</button><h3 style="margin-top:4px">朋友</h3><div id="friends"></div><h3>公共聊天室</h3><div id="chat" aria-live="polite"></div><div class="chatbar"><input id="chatIn" maxlength="300" placeholder="輸入訊息" aria-label="聊天訊息" aria-describedby="chatErr"><button class="mini big" id="chatSend">傳送</button></div><div class="err" id="chatErr"></div></div></div>
 <div class="panel" id="p-decor" hidden role="dialog" aria-label="裝飾庭院"><div class="ph"><h2>裝飾庭院</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><p class="note">先走到農場下方的庭院，再選一個裝飾，它會放在角色腳邊。點已放好的裝飾可以移動或收起。</p><div class="filters" id="decorCats"></div><div class="decorItems" id="decorItems"></div></div></div>
+<div class="panel" id="p-explore" hidden role="dialog" aria-label="探索世界"><div class="ph"><h2>探索世界</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb" id="exploreBody"></div></div>
 <div class="panel" id="p-settings" hidden role="dialog" aria-label="設定"><div class="ph"><h2>設定</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><div class="settings"><button class="btn" id="speedBtn"></button><p class="note">加速只用於測試流程，會讓所有生長時間變快 20 倍。</p><button class="btn warn" id="resetBtn">重新開始</button><p class="note" id="account" style="margin-top:16px"></p><button class="btn" id="logoutBtn">登出</button></div></div></div>
 <div id="tut" hidden role="status"><div class="tuth"><svg viewBox="-12 -12 24 24" width="30" height="30" aria-hidden="true"><circle r="11" fill="#F1C27D"/><path d="M-11 -2 Q-11 -12 0 -12 Q11 -12 11 -2 L14 -2 L-14 -2Z" fill="#E2C46B"/><circle cx="-4" cy="1" r="1.3" fill="#2A1E18"/><circle cx="4" cy="1" r="1.3" fill="#2A1E18"/><path d="M-5 5 Q0 9 5 5" stroke="#7A5A3A" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>農會阿伯<span class="stp" id="tutStep"></span></div><p id="tutText"></p><div class="tutb"><button id="tutSkip">跳過教學</button><button id="tutNext" hidden></button></div></div>
 <div id="backdrop"></div>
@@ -294,8 +311,12 @@ const CROPS={
   corn:{n:'玉米',short:'玉米',min:9,price:15,body:'tall',fl:'#D8C27A',fx:10,fy:-50,fs:46,deco:'kernels',ribs:false,bumps:false,shapes:['圓柱','錐形','短胖','彎月','螺旋'],surf:['飽滿','皺粒','爆裂粒'],tpl:[superE(0.5,1.15),tearDown(0.65,1.15),superE(0.68,0.85),bend(superE(0.45,1.15),0.5),wav(superE(0.48,1.15),0.18,4)]},
   broccoli:{n:'花椰菜',short:'花椰',min:10,price:17,body:'rosette',fl:'#F3E36A',fx:0,fy:-26,fs:52,deco:'florets',ribs:false,bumps:false,shapes:['圓頂','扁平','尖塔','螺旋塔','愛心'],surf:['細密','顆粒','捲曲'],tpl:[flatB(ell(1.15,0.95),0.35),flatB(ell(1.3,0.65),0.3),tearUp(1,1.1),lobe(tearUp(1,1.1),9,0.07),heart]},
   sweetpotato:{n:'甘藷',short:'甘藷',min:13,price:22,body:'vine',fl:'#C9A3E0',fx:10,fy:-6,fs:46,deco:'roots',ribs:false,bumps:true,shapes:['紡錘','圓球','長條','心形','捲曲'],surf:['光滑','凹紋','瘤狀'],tpl:[rot(spindle(0.55,1.3)),ell(0.95,0.95),rot(spindle(0.35,1.45)),heart,rot(wav(spindle(0.45,1.3),0.22,4))]},
-  melon:{n:'哈密瓜',short:'蜜瓜',min:15,price:25,body:'vine',fl:'#F3CC45',fx:12,fy:-14,fs:48,deco:'net',ribs:false,bumps:false,shapes:['圓球','橢圓','扁圓','愛心','星形'],surf:['光滑','淺網紋','深網紋'],tpl:[ell(1,1),ell(0.85,1.1),ell(1.2,0.82),heart,star(5,.75,.28)]}
+  melon:{n:'哈密瓜',short:'蜜瓜',min:15,price:25,body:'vine',fl:'#F3CC45',fx:12,fy:-14,fs:48,deco:'net',ribs:false,bumps:false,shapes:['圓球','橢圓','扁圓','愛心','星形'],surf:['光滑','淺網紋','深網紋'],tpl:[ell(1,1),ell(0.85,1.1),ell(1.2,0.82),heart,star(5,.75,.28)]},
+  chili:{n:'辣椒',short:'辣椒',min:7,price:12,body:'bush',fl:'#FFFFFF',fx:5,fy:-30,fs:44,deco:'pepper',ribs:true,bumps:true,shapes:['長角','櫻桃','燈籠','愛心','螺旋'],surf:['光滑','皺皮','瘤皮'],tpl:[bend(tearDown(0.42,1.3),0.35),ell(0.9,0.9),lobe(superE(0.95,0.95,0.6),4,0.07),heart,wav(tearDown(0.42,1.3),0.22,4)]},
+  pumpkin:{n:'南瓜',short:'南瓜',min:12,price:20,body:'vine',fl:'#F2A81E',fx:12,fy:-14,fs:52,deco:'pumpkin',ribs:true,bumps:true,shapes:['扁圓','圓球','葫蘆','愛心','星形'],surf:['光滑','溝紋','瘤狀'],tpl:[lobe(ell(1.3,0.82),8,0.05),ell(1,1),gourd,heart,star(5,.72,.3)]},
+  eggplant:{n:'茄子',short:'茄子',min:8,price:14,body:'bush',fl:'#B79AE0',fx:4,fy:-26,fs:50,deco:'cap',ribs:false,bumps:true,shapes:['長條','蛋形','圓球','愛心','彎月'],surf:['光滑','細紋','瘤狀'],tpl:[ell(0.42,1.25),tearUp(0.8,1.1),ell(1,1),heart,bend(ell(0.42,1.2),0.6)]}
 };
+const BASE_CROPS=['tomato','strawberry','zucchini','bittergourd','corn','broccoli','sweetpotato','melon'];
 const CROP_KEYS=Object.keys(CROPS);
 const ANCH=[0.15,0.40,0.60,0.77,0.93],SHAPE_T=[0,0,1,2,3];
 const SURF={S:{d:0,t:0},R:{d:1,t:1},B:{d:2,t:2}};
@@ -424,12 +445,12 @@ function genName(crop,used){
 let state=null,uiCrop='all';
 const lc=l=>l.seeds?l.seeds.length:(l.count||0);
 function drawSeed(l){if(l.seeds&&l.seeds.length)return l.seeds.splice(Math.floor(rnd()*l.seeds.length),1)[0];l.count--;return child(l.m,l.f).g}
-function newGame(){state={v:1,coins:1000,speed:1,last:Date.now(),plots:Array(64).fill(null),selfC:{},decor:[],avatar:{...AV_DEF},tut:{step:0,done:false},orders:{},me:{x:230,y:545},lots:[],nextLine:1,nextLot:1,nextLid:1,counts:{},given:[]}}
+function newGame(){state={v:1,coins:1000,speed:1,last:Date.now(),plots:Array(64).fill(null),selfC:{},decor:[],avatar:{...AV_DEF},tut:{step:0,done:false},orders:{},me:{x:230,y:545},lots:[],nextLine:1,nextLot:1,nextLid:1,counts:{},given:[],items:{},ex:null}}
 function ensureCrops(){
   if(!state.given)state.given=[];
   const used=new Set(regList.map(r=>r.norm));state.lots.forEach(l=>used.add(norm(l.name)));
   const fresh=[];
-  for(const c of CROP_KEYS){
+  for(const c of BASE_CROPS){
     if(state.given.includes(c))continue;
     const roles=shuffle(['taste','yield','looks']),profs=shuffle(PROFILES.slice()).slice(0,3);
     roles.forEach((role,k)=>{const g=makeOriginal(role,profs[k]),name=genName(c,used);state.lots.push({id:state.nextLot++,lid:'L'+(state.nextLid++),crop:c,name,source:'原始品種',m:g,f:g,count:8,germ:0.9});fresh.push({crop:c,name,g})});
@@ -441,6 +462,7 @@ function migrate(o){
   if(!o.nextLid)o.nextLid=1;if(!o.counts)o.counts={};
   while(o.plots.length<64)o.plots.push(null);
   if(!o.selfC)o.selfC={};
+  if(!o.items)o.items={};
   if(!o.decor)o.decor=[];if(!o.avatar)o.avatar={...AV_DEF};if(!o.tut)o.tut={step:0,done:false};if(!o.orders)o.orders={};if(!o.me||o.me.x>440)o.me={x:230,y:545};
   if(o.decor.some(d=>d.x>460))o.decor=o.decor.map(d=>({...d,x:Math.round(clamp(40+(d.x-780)/356*380,40,420)),y:Math.round(clamp(575+(d.y-84)/202*245,575,820))}));
   const byName={};
@@ -486,12 +508,12 @@ function sortReg(){regList.sort((a,b)=>tms(a.at)-tms(b.at))}
 const gCache=new Map();
 function regG(r){if(!gCache.has(r.id||r.name))gCache.set(r.id||r.name,JSON.parse(r.g));return gCache.get(r.id||r.name)}
 function findVariety(crop,app){return regList.find(r=>r.crop===crop&&r.app&&sameApp(r.app,app))}
-async function registerOriginals(list){
+async function registerOriginals(list,label='原始品種'){
   for(const o of list){
     const ph=phen(o.g,o.crop),app=appOf(ph);
     if(findVariety(o.crop,app))continue;
     regList.push({crop:o.crop,app,name:o.name,norm:norm(o.name),at:null,tmp:true});
-    try{await db.collection('registry').add({crop:o.crop,name:o.name,norm:norm(o.name),inventorUid:'system',inventorName:'原始品種',at:TS(),app,g:JSON.stringify(o.g),q:ph.quality,p:ph.perf,total:ph.total,tier:ph.tier,best:{q:ph.quality,qBy:'原始品種',p:ph.perf,pBy:'原始品種'}})}catch(e){}
+    try{await db.collection('registry').add({crop:o.crop,name:o.name,norm:norm(o.name),inventorUid:'system',inventorName:label,at:TS(),app,g:JSON.stringify(o.g),q:ph.quality,p:ph.perf,total:ph.total,tier:ph.tier,best:{q:ph.quality,qBy:label,p:ph.perf,pBy:label}})}catch(e){}
   }
 }
 function startListeners(){
@@ -589,6 +611,16 @@ function fruitInner(ph,ripe,crop){
     for(let k=0;k<10;k++){const x=(R()-0.5)*2.2,y=(R()-0.5)*0.9;deco+=`<path d="M${f3(x)} ${f3(y)} l0.08 0" stroke="${darkc}" stroke-width="0.04" stroke-linecap="round"/>`}
     if(ph.surf==='R')for(let k=-2;k<=2;k++)deco+=`<path d="M${f3(k*0.45-0.1)} -0.9 q0.1 0.9 0 1.8" stroke="${darkc}" stroke-width="0.04" fill="none" opacity=".6"/>`;
     front+=`<path d="M${f3(minP[0]+0.04)} ${f3(minP[1])} q-0.2 0.04 -0.34 0.16" stroke="${darkc}" stroke-width="0.045" fill="none" stroke-linecap="round"/><path d="M${f3(maxP[0]-0.04)} ${f3(maxP[1])} q0.2 0.04 0.34 0.16" stroke="${darkc}" stroke-width="0.045" fill="none" stroke-linecap="round"/>`;
+  }else if(cd.deco==='pepper'){
+    if(ok&&ph.surf==='R')for(let k=-2;k<=2;k++){let dd='';for(let v=-1.3;v<=1.31;v+=0.26){const x=k*0.2*(1-0.2*v*v)+tw*0.35*v+0.05*S(v*6+k);dd+=(dd?' L':'M')+f3(x)+' '+f3(v)}deco+=`<path d="${dd}" stroke="${darkc}" stroke-width="0.05" fill="none" opacity=".55"/>`}
+    front+=`<ellipse cx="0" cy="${f3(topY+0.04)}" rx="0.3" ry="0.12" fill="#4E8A2A"/><path d="M0 ${f3(topY)} q0.02 -0.3 0.3 -0.42" stroke="#3B6D11" stroke-width="0.11" fill="none" stroke-linecap="round"/>`;
+  }else if(cd.deco==='pumpkin'){
+    const sw=ph.surf==='R'?0.075:0.045;
+    for(let k=-3;k<=3;k++){if(!k)continue;let dd='';for(let v=-1.5;v<=1.51;v+=0.15){const x=k*0.32*(1-0.12*v*v)+tw*0.4*v;dd+=(dd?' L':'M')+f3(x)+' '+f3(v)}deco+=`<path d="${dd}" stroke="${darkc}" stroke-width="${sw}" fill="none" opacity=".6"/>`}
+    front+=`<path d="M-0.09 ${f3(topY+0.1)} L-0.12 ${f3(topY-0.22)} Q0 ${f3(topY-0.34)} 0.14 ${f3(topY-0.24)} L0.09 ${f3(topY+0.1)}Z" fill="#7A6A2A"/><path d="M0.12 ${f3(topY-0.2)} q0.25 -0.05 0.22 0.12 q-0.03 0.12 -0.14 0.06" stroke="#4E8A2A" stroke-width="0.05" fill="none" stroke-linecap="round"/>`;
+  }else if(cd.deco==='cap'){
+    if(ok&&ph.surf==='R')for(let k=-3;k<=3;k++){let dd='';for(let v=-1.4;v<=1.41;v+=0.2){const x=k*0.12*(1-0.2*v*v)+tw*0.3*v;dd+=(dd?' L':'M')+f3(x)+' '+f3(v)}deco+=`<path d="${dd}" stroke="${light}" stroke-width="0.035" fill="none" opacity=".7"/>`}
+    front+=`<polygon points="${[...Array(10).keys()].map(k=>{const a=k/10*6.283-Math.PI/2,r=k%2?0.14:0.4;return f3(C(a)*r)+','+f3(topY+0.16+S(a)*r*0.7)}).join(' ')}" fill="#4E7F2A"/><rect x="-0.08" y="${f3(topY-0.3)}" width="0.16" height="0.36" rx="0.05" fill="#5E7F34"/>`;
   }else if(cd.deco==='net'){
     if(ph.surf!=='S'){const st=ph.surf==='B'?0.22:0.34;for(let k=-8;k<=8;k++){deco+=`<path d="M${f3(k*st-1.6)} -1.6 Q${f3(k*st+0.1)} 0 ${f3(k*st+1.6)} 1.6" stroke="${light}" stroke-width="0.035" fill="none" opacity=".8"/><path d="M${f3(k*st+1.6)} -1.6 Q${f3(k*st-0.1)} 0 ${f3(k*st-1.6)} 1.6" stroke="${light}" stroke-width="0.035" fill="none" opacity=".8"/>`}}
     front+=stem();
@@ -846,9 +878,12 @@ function renderSheet(){
   }
   if(!p){
     h+=`<h2>第 ${i+1} 塊土地</h2><p class="stage">空地。選一包種子播種，每次種下一顆。</p><div class="filters">${filtersHTML(uiCrop,'data-sc')}</div>`;
-    const lots=state.lots.filter(l=>uiCrop==='all'||l.crop===uiCrop);
+    const lots=state.lots.filter(l=>uiCrop==='all'||l.crop===uiCrop),it=state.items||{};
+    if(sheet.gf&&!(it['g'+sheet.gf]>0))sheet.gf=0;
+    const gf=sheet.gf||0;
+    if([1,2,3].some(l=>it['g'+l]>0))h+=`<div class="ferts"><span class="lbl">搭配發芽肥料（播種時用掉一個）</span><button class="fchip" data-gf="0" aria-pressed="${!gf}">不用</button>${[1,2,3].filter(l=>it['g'+l]>0).map(l=>`<button class="fchip" data-gf="${l}" aria-pressed="${gf===l}">${LV[l]} +${Math.round(GB[l]*100)}%（${it['g'+l]}）</button>`).join('')}</div>`;
     if(!lots.length)h+=`<p class="note">這個分類沒有種子。</p>`;
-    h+=lots.map(l=>`<button class="pick" data-act="plant" data-lot="${l.id}">${fruitSVG(phen(l.m,l.crop),l.crop,44)}<span><b>${esc(l.name)}</b><span class="meta">${CROPS[l.crop].n}・剩 ${lc(l)} 顆・發芽率 ${Math.round(l.germ*100)}%</span></span></button>`).join('');
+    h+=lots.map(l=>`<button class="pick" data-act="plant" data-lot="${l.id}">${fruitSVG(phen(l.m,l.crop),l.crop,44)}<span><b>${esc(l.name)}</b><span class="meta">${CROPS[l.crop].n}・剩 ${lc(l)} 顆・發芽率 ${Math.round(Math.min(0.99,l.germ+GB[gf])*100)}%${gf?'（含肥料）':''}</span></span></button>`).join('');
   }else{
     const ph=phen(p.g,p.crop),lvl=p.stage==='seedling'?1:p.stage==='ripe'?3:2;
     h+=`<h2>${esc(pname(p))}</h2><p class="stage">${CROPS[p.crop].n}・第 ${i+1} 塊土地・${stageLabel(p)}${p.pollen?`・${p.pollen.type==='cross'?`與 ${esc(p.pollen.fatherName)} 雜交`:'自己授粉'}`:''}</p>`;
@@ -858,6 +893,9 @@ function renderSheet(){
       const pi=progInfo(p);h+=`<div class="bar"><i id="pbar" style="width:${pi.pct}%"></i></div><p class="note" id="ptime">${pi.txt}</p>`;
     }
     if(p.stage==='seedling'||p.stage==='fruit')h+=`<div class="row2"><button class="btn primary" data-act="water" ${p.watered?'disabled':''}>${p.watered?'已澆水':'澆水'}</button><button class="btn" data-act="fert" ${p.fert?'disabled':''}>${p.fert?'已施肥':'施肥'}</button></div>`;
+    {const it=state.items||{};
+      if(p.yf)h+=`<p class="note" style="margin-top:10px">已使用增產肥料（${LV[p.yf]}），取種時多 ${YB[p.yf]} 顆。</p>`;
+      else if([1,2,3].some(l=>it['y'+l]>0))h+=`<p class="note" style="margin-top:10px">增產肥料：取種時能多得幾顆種子，每株只能用一次。</p><div class="ybtns">${[1,2,3].filter(l=>it['y'+l]>0).map(l=>`<button class="btn" data-act="yfert" data-l="${l}">${LV[l]}（${it['y'+l]}）<br>多 ${YB[l]} 顆</button>`).join('')}</div>`;}
     if(p.stage==='flower'){
       h+=`<p class="note" style="margin-top:12px">雜交會讓兩株的特徵重新組合；自己授粉則會讓後代越來越像這一株。只有同一種作物才能雜交。</p><button class="btn primary" data-act="self">自己授粉</button>`;
       const others=state.plots.map((q,j)=>({q,j})).filter(o=>o.q&&o.j!==i&&o.q.stage==='flower'&&o.q.crop===p.crop);
@@ -865,7 +903,7 @@ function renderSheet(){
     }
     if(p.stage==='ripe'){
       const n=Math.max(1,Math.round(2+8*ph.ab.yield/100)),total=Math.round(n*CROPS[p.crop].price*ph.ab.taste/50);
-      h+=`<div class="row2"><button class="btn primary" data-act="sell">賣掉 ${n} 個，得 ${total} 金幣</button><button class="btn" data-act="seed">取種，約 ${SEEDN[ph.tier]} 顆</button></div><p class="note">同一株只能二選一，處理後植株會移除。</p>`;
+      h+=`<div class="row2"><button class="btn primary" data-act="sell">賣掉 ${n} 個，得 ${total} 金幣</button><button class="btn" data-act="seed">取種，約 ${SEEDN[ph.tier]+YB[p.yf||0]} 顆</button></div><p class="note">同一株只能二選一，處理後植株會移除。</p>`;
       h+=regHTML(p,ph);
     }
     h+=infoHTML(ph,lvl,p.g,p.crop);
@@ -879,6 +917,7 @@ function renderSheet(){
 sb.addEventListener('click',e=>{
   if(!sheet)return;
   const fc=e.target.closest('[data-sc]');if(fc){uiCrop=fc.dataset.sc;renderSheet();return}
+  const gfb=e.target.closest('[data-gf]');if(gfb){sheet.gf=+gfb.dataset.gf;renderSheet();return}
   const b=e.target.closest('[data-act]');if(!b)return;
   if(b.dataset.act==='close')return closeSheet();
   if(sheet.stall!=null)return stallAction(b);
@@ -895,13 +934,15 @@ sb.addEventListener('click',e=>{
   if(act==='record')return doRecord(i);
   if(act==='plant'){
     const lot=state.lots.find(l=>l.id===+b.dataset.lot);if(!lot||!lc(lot))return;
-    const g=drawSeed(lot);
+    const g=drawSeed(lot),gf=sheet.gf||0,it=state.items||(state.items={});let germ=lot.germ;
+    if(gf&&it['g'+gf]>0){it['g'+gf]--;germ=Math.min(0.99,germ+GB[gf])}
     if(!lc(lot))state.lots=state.lots.filter(l=>l!==lot);
-    if(rnd()<lot.germ){state.plots[i]={g,m:clone(lot.m),crop:lot.crop,name:lot.name,lid:lot.lid,lotId:lot.id,no:(state.counts[lot.lid]=(state.counts[lot.lid]||0)+1),stage:'seedling',prog:0,watered:false,fert:false,flowerT:0,pollen:null};toast('發芽了，記得澆水');tutEv('plant')}
+    if(rnd()<germ){state.plots[i]={g,m:clone(lot.m),crop:lot.crop,name:lot.name,lid:lot.lid,lotId:lot.id,no:(state.counts[lot.lid]=(state.counts[lot.lid]||0)+1),stage:'seedling',prog:0,watered:false,fert:false,flowerT:0,pollen:null};toast('發芽了，記得澆水');tutEv('plant')}
     else toast('這顆種子沒有發芽');
   }
   if(act==='water'&&p){p.watered=true;toast('澆好水了');tutEv('water')}
   if(act==='fert'&&p){p.fert=true;toast('施肥完成，這個階段會長得比較快')}
+  if(act==='yfert'&&p&&!p.yf){const l=+b.dataset.l,it=state.items||{};if(it['y'+l]>0){it['y'+l]--;p.yf=l;toast(`用了增產肥料（${LV[l]}），取種時會多 ${YB[l]} 顆`)}}
   if(act==='self'&&p)pollinate(i,null);
   if(act==='cross'&&p)pollinate(i,+b.dataset.j);
   if(act==='uproot'&&p){if(!sheet.confirm){sheet.confirm=true;renderSheet();return}state.plots[i]=null;toast('已拔掉')}
@@ -921,7 +962,7 @@ function takeSeeds(i){
   const base=p.name.replace(/-\d+$/,'');
   const f=cross?p.pollen.fatherG:p.g,name=cross?`品系 ${state.nextLine++}`:`${base}-${state.selfC[base]=(state.selfC[base]||0)+1}`,lid=cross?'L'+(state.nextLid++):p.lid;
   const source=cross?`${pname(p)} × ${p.pollen.fatherName}`:`${pname(p)} 自己授粉`;
-  const n=SEEDN[ph.tier],seeds=[];let mu=0;
+  const n=SEEDN[ph.tier]+YB[p.yf||0],seeds=[];let mu=0;
   for(let k=0;k<n;k++){const c=child(p.g,f);seeds.push(c.g);if(c.mu)mu++}
   state.lots.unshift({id:state.nextLot++,lid,crop:p.crop,name,source,m:clone(p.g),f:clone(f),seeds,germ:GERM[ph.tier],cross:!!cross});
   state.plots[i]=null;
@@ -1132,7 +1173,7 @@ const GATE={farm:[230,880],market:[230,735]};
 const STALLS=[[120,200],[340,200],[120,350],[340,350],[120,500],[340,500],[120,650],[340,650]];
 const AWN=['#D9473A','#3F86C4','#E0A82E','#3F7B38','#8E5CC8','#E0823D','#E26F9A','#3E9E92'];
 let scene='farm',viewing=null,visitMe={x:230,y:840},marketMe={x:230,y:690},hoverPlot=null,hoverStall=null,selDecor=null,curPanel=null;
-const curMe=()=>scene==='market'?marketMe:viewing?visitMe:(state.me||(state.me={x:230,y:545}));
+const curMe=()=>scene==='market'?marketMe:scene==='explore'?exMe:viewing?visitMe:(state.me||(state.me={x:230,y:545}));
 function gateSVG(x,y,label){return `<g stroke="#4A2A12" stroke-width="1.6" stroke-linejoin="round"><rect x="${x-38}" y="${y-50}" width="8" height="50" rx="2" fill="#B5763C"/><rect x="${x+30}" y="${y-50}" width="8" height="50" rx="2" fill="#B5763C"/><path d="M${x-50} ${y-58} Q${x} ${y-78} ${x+50} ${y-58} L${x+46} ${y-46} Q${x} ${y-64} ${x-46} ${y-46}Z" fill="#D9473A"/><rect x="${x-34}" y="${y-62}" width="68" height="20" rx="6" fill="#FFF3D6"/><text x="${x}" y="${y-47}" text-anchor="middle" font-size="12" font-weight="700" fill="#4A2A12" stroke="none" font-family="Noto Sans TC,sans-serif">${label}</text></g>`}
 const GROUND=(()=>{const R=srand(4242);let t='';for(let k=0;k<70;k++){const x=20+R()*420,y=70+R()*840,r=R();t+=r<0.6?`<path d="M${x.toFixed(0)} ${y.toFixed(0)} l2.5 -6 l2.5 6 M${(x+4).toFixed(0)} ${y.toFixed(0)} l2 -4.5 l2 4.5" stroke="#5FA83A" stroke-width="1.6" fill="none" stroke-linecap="round"/>`:`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="2.6" fill="${['#FFF2A8','#FFB6C9','#FFFFFF','#C9B6FF'][Math.floor(R()*4)]}" stroke="#5A8A2A" stroke-width=".8"/>`}return t})();
 function farmWorld(st,hov,selD){
@@ -1179,6 +1220,7 @@ function marketWorld(hl){
 function renderWorld(){
   if(!state)return;const L=document.getElementById('worldLayer');
   if(scene==='market'){L.innerHTML=marketWorld(hoverStall);return}
+  if(scene==='explore'){L.innerHTML=exploreWorld();return}
   if(viewing){L.innerHTML=viewing.st?farmWorld(viewing.st,hoverPlot,null):`<text x="230" y="300" text-anchor="middle" font-size="16" fill="var(--muted)">讀取朋友的農場中…</text>`;return}
   L.innerHTML=farmWorld(state,hoverPlot,selDecor);
 }
@@ -1187,6 +1229,7 @@ function renderHint(){}
 const sceneEl=document.getElementById('scene');
 function updateCam(){
   if(!state)return;
+  if(scene==='explore'){const r=camRect();sceneEl.setAttribute('viewBox',`${r.x.toFixed(1)} ${r.y.toFixed(1)} ${r.w.toFixed(1)} ${r.h.toFixed(1)}`);if(exRange(r).key!==exKey)renderWorld();return}
   const vw=window.innerWidth,vh=window.innerHeight,k=vw/400,w=vw/k,h=vh/k,{W,H}=scene==='market'?WORLD.market:WORLD.farm,m=curMe();
   let x=m.x-w/2,y=m.y-h*0.55;
   x=W<=w?(W-w)/2:clamp(x,0,W-w);y=H+80<=h?(H-h)/2:clamp(y,-70,H-h+80);
@@ -1279,7 +1322,7 @@ function openPanel(name){
   closeSheet();curPanel=name;
   for(const p of document.querySelectorAll('.panel'))p.hidden=p.id!=='p-'+name;
   document.getElementById('pdim').hidden=false;
-  if(name==='bag')renderBag();if(name==='dex')renderDex();if(name==='social')renderSocial(true);if(name==='decor')renderDecorPanel();if(name==='settings')renderSpeed();
+  if(name==='bag')renderBag();if(name==='dex')renderDex();if(name==='social')renderSocial(true);if(name==='decor')renderDecorPanel();if(name==='settings')renderSpeed();if(name==='explore')renderExplore();
   const pb=document.querySelector('#p-'+name+' .pb');if(pb)pb.scrollTop=0;
 }
 function closePanel(){curPanel=null;for(const p of document.querySelectorAll('.panel'))p.hidden=true;document.getElementById('pdim').hidden=true}
@@ -1299,9 +1342,9 @@ document.getElementById('iconbar').addEventListener('click',e=>{
 });
 function renderHUD(){
   if(!state)return;
-  document.getElementById('sceneName').textContent=scene==='market'?'市集':viewing?`${viewing.name} 的農場`:'我的農場';
+  document.getElementById('sceneName').textContent=scene==='market'?'市集':scene==='explore'?`探索：${BIOMES[exBiome].n}`:viewing?`${viewing.name} 的農場`:'我的農場';
   const mb=document.getElementById('ibMarket');mb.querySelector('span').textContent=scene==='market'?'回農場':'市集';
-  document.getElementById('ibHome').hidden=!viewing;
+  document.getElementById('ibHome').hidden=!(viewing||scene==='explore');
   const own=scene==='farm'&&!viewing;
   document.getElementById('fertBtn').hidden=!own;document.getElementById('waterAll').hidden=!own;
   document.getElementById('ibDecor').hidden=!own;
@@ -1345,10 +1388,208 @@ function signHTML(){return `<h2>招牌文字</h2><p class="note">最多 8 個字
 function bindSign(){const i=document.getElementById('signIn');if(i){i.focus();i.addEventListener('input',()=>{sheet.draft=i.value;if(sheet.err){sheet.err='';document.getElementById('signErr').textContent=''}})}}
 function signAction(b){if(b.dataset.act!=='signsave')return;const v=sheet.draft.trim();if(!v){sheet.err='請輸入文字';renderSheet();return}if(glen(v)>8){sheet.err='最多 8 個字';renderSheet();return}const d=state.decor[sheet.sign];if(d)d.txt=v;save();renderWorld();closeSheet()}
 
+
+// ===== 探索世界 =====
+const OL='#3B2A18',EXC=360,EX_LIMIT=30,EXGATE=[0,60];
+const f1=v=>v.toFixed(1);
+const LV=['','初級','中級','高級'],GB=[0,0.1,0.2,0.3],YB=[0,1,2,3],IKEYS=['g1','g2','g3','y1','y2','y3'];
+const itemName=k=>k==='wild'?'野生種原':k==='rare'?'珍稀種原':(k[0]==='g'?'發芽肥料':'增產肥料')+'（'+LV[+k[1]]+'）';
+const itemEff=k=>k[0]==='g'?`播種時發芽率 +${Math.round(GB[+k[1]]*100)}%`:`取種時多 ${YB[+k[1]]} 顆種子`;
+const IW=[['g1',26],['g2',12],['g3',4],['y1',24],['y2',11],['y3',4],['wild',10],['rare',1.6]];
+const dayKey=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+function ensureEx(){
+  if(!state.items)state.items={};for(const k of IKEYS)state.items[k]=state.items[k]||0;
+  const dk=dayKey();if(!state.ex||state.ex.day!==dk)state.ex={day:dk,got:[],picks:0};
+}
+function wpickR(list,R){const s=list.reduce((a,b)=>a+(b.w!=null?b.w:b[1]),0);let r=R()*s;for(const o of list){r-=o.w!=null?o.w:o[1];if(r<0)return o}return list[0]}
+
+// --- 繪圖小工具 ---
+function blob(cx,cy,rx,ry,R,n=9,j=0.28){
+  const pts=[];for(let k=0;k<n;k++){const a=k/n*6.283,r=1-j/2+R()*j;pts.push([cx+C(a)*rx*r,cy+S(a)*ry*r])}
+  const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2],st=mid(pts[n-1],pts[0]);let d=`M${f1(st[0])} ${f1(st[1])}`;
+  for(let k=0;k<n;k++){const p=pts[k],m=mid(p,pts[(k+1)%n]);d+=` Q${f1(p[0])} ${f1(p[1])} ${f1(m[0])} ${f1(m[1])}`}
+  return d+'Z';
+}
+function puff(cs,fill,hl){
+  return cs.map(([x,y,r])=>`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r+1.5)}" fill="${OL}"/>`).join('')+cs.map(([x,y,r])=>`<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(r)}" fill="${fill}"/>`).join('')+(hl?cs.slice(0,2).map(([x,y,r])=>`<circle cx="${f1(x-r*0.3)}" cy="${f1(y-r*0.35)}" r="${f1(r*0.38)}" fill="${hl}" opacity=".6"/>`).join(''):'');
+}
+function tube(d,w,fill){return `<path d="${d}" stroke="${OL}" stroke-width="${f1(w+2.8)}" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" stroke="${fill}" stroke-width="${f1(w)}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`}
+const shadow=(x,y,rx)=>`<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(rx)}" ry="${f1(rx*0.3)}" fill="#000" opacity=".13"/>`;
+const blades=(x,y,R,col,n=5,h=14)=>{let d='';for(let k=0;k<n;k++){const a=(k/(n-1)-0.5)*1.4+(R()-0.5)*0.3,l=h*(0.7+R()*0.5);d+=`M${f1(x+(k-n/2)*1.6)} ${f1(y)} q${f1(S(a)*l*0.3)} ${f1(-l*0.6)} ${f1(S(a)*l)} ${f1(-C(a)*l)} `}return `<path d="${d}" stroke="${col}" stroke-width="2" fill="none" stroke-linecap="round"/>`};
+function rock(x,y,R,c1,c2,s=1){const rx=(12+R()*10)*s,ry=rx*0.62;return shadow(x,y+1,rx*1.05)+`<path d="${blob(x,y-ry*0.8,rx,ry,R,8,0.3)}" fill="${c1}" stroke="${OL}" stroke-width="1.4"/><path d="${blob(x-rx*0.15,y-ry*1.05,rx*0.6,ry*0.45,R,7,0.3)}" fill="${c2}"/>`}
+
+// --- 各地區的地景物件 ---
+const OBJ={
+  cactus:(x,y,R)=>{const s=0.8+R()*0.5,h=40*s,l=R()<0.8,r=R()<0.7;let d=`M${f1(x)} ${f1(y)} V${f1(y-h)}`;if(l)d+=` M${f1(x)} ${f1(y-h*0.42)} H${f1(x-11*s)} V${f1(y-h*0.42-12*s)}`;if(r)d+=` M${f1(x)} ${f1(y-h*0.62)} H${f1(x+10*s)} V${f1(y-h*0.62-10*s)}`;return shadow(x,y+1,14*s)+tube(d,11*s,'#73AD5C')+`<path d="M${f1(x-2.2*s)} ${f1(y-5)} V${f1(y-h+4)}" stroke="#A3D486" stroke-width="2" stroke-linecap="round"/>`+(R()<0.35?`<circle cx="${f1(x+1)}" cy="${f1(y-h-4*s)}" r="${f1(3*s)}" fill="#F27BA0" stroke="${OL}" stroke-width="1.2"/>`:'')},
+  sandrock:(x,y,R)=>rock(x,y,R,'#D49360','#E8B27C',1.2),
+  dryshrub:(x,y,R)=>{let d='';for(let k=0;k<6;k++){const a=(k/5-0.5)*1.8,l=10+R()*8;d+=`M${f1(x)} ${f1(y)} l${f1(S(a)*l)} ${f1(-C(a)*l)} `}return shadow(x,y+1,9)+`<path d="${d}" stroke="#8E5E33" stroke-width="2" fill="none" stroke-linecap="round"/>`},
+  dune:(x,y,R)=>{let s='';for(let k=0;k<3;k++){const w=26+R()*18,yy=y+k*7;s+=`<path d="M${f1(x-w)} ${f1(yy)} Q${f1(x)} ${f1(yy-7)} ${f1(x+w)} ${f1(yy)}" stroke="#DDB46E" stroke-width="2.2" fill="none" stroke-linecap="round"/>`}return s},
+  pebbles:(x,y,R)=>{let s='';for(let k=0;k<4;k++)s+=`<ellipse cx="${f1(x+(R()-0.5)*26)}" cy="${f1(y+(R()-0.5)*12)}" rx="${f1(2+R()*2)}" ry="${f1(1.4+R())}" fill="#B98A5A" opacity=".7"/>`;return s},
+  tuft:(x,y,R)=>blades(x,y,R,'#4F9A35',5,13),
+  flowers:(x,y,R)=>{const col=['#FFF2A8','#FFB6C9','#FFFFFF','#C9B6FF','#FF9E7A'][Math.floor(R()*5)];let s='';for(let k=0;k<3;k++){const fx=x+(R()-0.5)*22,fy=y+(R()-0.5)*10;s+=`<path d="M${f1(fx)} ${f1(fy)} v6" stroke="#4F9A35" stroke-width="1.6"/><circle cx="${f1(fx)}" cy="${f1(fy)}" r="3.2" fill="${col}" stroke="${OL}" stroke-width="1"/><circle cx="${f1(fx)}" cy="${f1(fy)}" r="1.1" fill="#E0A21E"/>`}return s},
+  bush:(x,y,R)=>{const s=0.8+R()*0.5;return shadow(x,y+1,18*s)+puff([[x-9*s,y-9*s,10*s],[x+9*s,y-9*s,10*s],[x,y-16*s,12*s]],'#6DB548','#A6DE78')+(R()<0.4?`<circle cx="${f1(x-5*s)}" cy="${f1(y-14*s)}" r="2.2" fill="#E8483C"/><circle cx="${f1(x+6*s)}" cy="${f1(y-9*s)}" r="2.2" fill="#E8483C"/>`:'')},
+  boulder:(x,y,R)=>rock(x,y,R,'#A6A398','#C8C5BA',1.1),
+  tree:(x,y,R)=>{const s=0.85+R()*0.45,c=R()<0.5?['#3F8F3A','#6DBA55']:['#4FA145','#86CC63'];return shadow(x,y+1,22*s)+tube(`M${f1(x)} ${f1(y)} V${f1(y-22*s)}`,7*s,'#8A5A33')+puff([[x-12*s,y-34*s,13*s],[x+12*s,y-34*s,13*s],[x,y-46*s,16*s],[x,y-30*s,12*s]],c[0],c[1])},
+  pine:(x,y,R)=>{const s=0.8+R()*0.5,cols=['#2F7A5A','#3E8E68'];let o='',f='',sn='';for(let k=0;k<3;k++){const w=(22-k*5)*s,top=y-(26+k*16)*s-14*s,bot=y-(10+k*16)*s;const pts=`${f1(x)},${f1(top)} ${f1(x+w)},${f1(bot)} ${f1(x-w)},${f1(bot)}`;o+=`<polygon points="${pts}" fill="${OL}" stroke="${OL}" stroke-width="3" stroke-linejoin="round"/>`;f+=`<polygon points="${pts}" fill="${cols[k%2]}"/>`;sn+=`<path d="M${f1(x)} ${f1(top)} L${f1(x+w*0.42)} ${f1(top+(bot-top)*0.42)} q${f1(-w*0.2)} 4 ${f1(-w*0.42)} 0 q${f1(-w*0.2)} 4 ${f1(-w*0.42)} 0 Z" fill="#FFFFFF"/>`}return shadow(x,y+1,20*s)+tube(`M${f1(x)} ${f1(y)} V${f1(y-12*s)}`,6*s,'#7A5030')+o+f+sn},
+  mushroom:(x,y,R)=>{const s=0.8+R()*0.5;return shadow(x,y+1,8*s)+`<rect x="${f1(x-3*s)}" y="${f1(y-10*s)}" width="${f1(6*s)}" height="${f1(10*s)}" rx="2" fill="#F7EEDB" stroke="${OL}" stroke-width="1.3"/><path d="M${f1(x-10*s)} ${f1(y-9*s)} Q${f1(x-10*s)} ${f1(y-21*s)} ${f1(x)} ${f1(y-21*s)} Q${f1(x+10*s)} ${f1(y-21*s)} ${f1(x+10*s)} ${f1(y-9*s)} Z" fill="#D9473A" stroke="${OL}" stroke-width="1.3"/><circle cx="${f1(x-4*s)}" cy="${f1(y-15*s)}" r="${f1(1.8*s)}" fill="#FFF"/><circle cx="${f1(x+4*s)}" cy="${f1(y-13*s)}" r="${f1(1.5*s)}" fill="#FFF"/>`},
+  fern:(x,y,R)=>{let s='';for(let k=0;k<4;k++){const a=(k/3-0.5)*2,l=14+R()*6,ex=x+S(a)*l,ey=y-C(a)*l*0.7;s+=`<path d="M${f1(x)} ${f1(y)} Q${f1((x+ex)/2)} ${f1(ey-4)} ${f1(ex)} ${f1(ey)}" stroke="#3E8A33" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-dasharray="3 1.4"/>`}return s},
+  log:(x,y,R)=>{const w=20+R()*10;return shadow(x,y+1,w*0.9)+`<rect x="${f1(x-w)}" y="${f1(y-10)}" width="${f1(w*2)}" height="10" rx="5" fill="#9A6A3E" stroke="${OL}" stroke-width="1.3"/><path d="M${f1(x-w*0.5)} ${f1(y-6)} h${f1(w*0.7)} M${f1(x-w*0.1)} ${f1(y-3)} h${f1(w*0.6)}" stroke="#7A5030" stroke-width="1.2" stroke-linecap="round"/><ellipse cx="${f1(x+w)}" cy="${f1(y-5)}" rx="3.6" ry="5" fill="#E1B886" stroke="${OL}" stroke-width="1.2"/>`},
+  drift:(x,y,R)=>{const rx=20+R()*16;return `<path d="${blob(x,y-4,rx,rx*0.42,R,9,0.25)}" fill="#FFFFFF" stroke="#B5CAD6" stroke-width="1.6"/><path d="${blob(x+rx*0.2,y-1,rx*0.6,rx*0.18,R,7,0.2)}" fill="#DCE9F1"/>`},
+  icepond:(x,y,R)=>{const rx=30+R()*30;return `<path d="${blob(x,y,rx,rx*0.45,R,10,0.25)}" fill="#BFE3F2" stroke="#86BCD3" stroke-width="2"/><path d="M${f1(x-rx*0.4)} ${f1(y-3)} l${f1(rx*0.3)} -4 M${f1(x+rx*0.05)} ${f1(y+4)} l${f1(rx*0.28)} -4" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>`},
+  snowrock:(x,y,R)=>{const rx=13+R()*9,ry=rx*0.6;return shadow(x,y+1,rx)+`<path d="${blob(x,y-ry*0.8,rx,ry,R,8,0.3)}" fill="#8F959B" stroke="${OL}" stroke-width="1.4"/><path d="${blob(x-rx*0.1,y-ry*1.25,rx*0.75,ry*0.38,R,7,0.25)}" fill="#FFFFFF"/>`},
+  sparkle:(x,y,R)=>`<path d="M${f1(x)} ${f1(y-4)} l1 3 3 1 -3 1 -1 3 -1 -3 -3 -1 3 -1z" fill="#FFFFFF" opacity=".9"/>`,
+  pond:(x,y,R)=>{const rx=38+R()*34;let s=`<path d="${blob(x,y,rx,rx*0.5,R,11,0.3)}" fill="#6DB2C8" stroke="#4C8DA3" stroke-width="2.2"/><path d="${blob(x-rx*0.1,y-rx*0.06,rx*0.7,rx*0.3,R,9,0.25)}" fill="#86C4D6"/>`;for(let k=0;k<3;k++){const px=x+(R()-0.5)*rx*1.1,py=y+(R()-0.5)*rx*0.5,pr=4+R()*3;s+=`<path d="M${f1(px)} ${f1(py)} L${f1(px+pr)} ${f1(py-1.5)} A${f1(pr)} ${f1(pr*0.65)} 0 1 0 ${f1(px+pr)} ${f1(py+1.5)} Z" fill="#5FA84A" stroke="#2F6B1E" stroke-width="1"/>`}s+=`<path d="M${f1(x+rx*0.2)} ${f1(y+rx*0.15)} q5 -3 10 0" stroke="#E6F5FA" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;return s},
+  reeds:(x,y,R)=>{let s=shadow(x,y+1,9);const n=3+Math.floor(R()*3);for(let k=0;k<n;k++){const dx=(k-n/2)*3.4,h=22+R()*12;s+=`<path d="M${f1(x+dx)} ${f1(y)} q${f1(R()*4-2)} ${f1(-h*0.5)} ${f1(R()*4-2)} ${f1(-h)}" stroke="#4E8A2A" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;if(R()<0.6)s+=tube(`M${f1(x+dx)} ${f1(y-h+2)} v-7`,3.6,'#7A4E2A')}return s},
+  mud:(x,y,R)=>`<path d="${blob(x,y,22+R()*16,9+R()*6,R,8,0.3)}" fill="#8F7C55" opacity=".55"/>`,
+  marshtuft:(x,y,R)=>blades(x,y,R,'#3E7F2E',6,15)
+};
+const BIOMES={
+  desert:{n:'沙漠',ch:'沙',base:'#F1D398',patch:'#E7C07C',patch2:'#F8E3B4',dens:9,crops:[['chili',4],['tomato',2],['melon',2],['sweetpotato',2]],bias:'resist',prof:{pr:[.62,.74],py:[.3,.42],pp:[.02,.06]},desc:'乾燥炎熱。野生種原的抗病性特別高。',
+    objs:[{f:OBJ.cactus,w:5},{f:OBJ.sandrock,w:3},{f:OBJ.dryshrub,w:3},{f:OBJ.dune,w:4,flat:1},{f:OBJ.pebbles,w:3,flat:1}],thumb:[['dune',40,82],['sandrock',128,74],['cactus',62,76],['cactus',112,50],['dryshrub',22,58]]},
+  grass:{n:'草原',ch:'原',base:'#A9DA73',patch:'#97CC62',patch2:'#BCE48A',dens:12,crops:[['pumpkin',4],['corn',2],['strawberry',2],['tomato',2]],bias:'yield',prof:{pr:[.24,.34],py:[.66,.78],pp:[.02,.06]},desc:'陽光充足。野生種原的產量特別高。',
+    objs:[{f:OBJ.tuft,w:5,flat:1},{f:OBJ.flowers,w:4,flat:1},{f:OBJ.bush,w:3},{f:OBJ.boulder,w:1.5}],thumb:[['flowers',30,80],['tuft',96,86],['bush',58,66],['boulder',128,74],['bush',118,46]]},
+  forest:{n:'森林',ch:'林',base:'#76B354',patch:'#64A246',patch2:'#88C163',dens:13,crops:[['strawberry',3],['pumpkin',2],['broccoli',2],['bittergourd',2]],bias:'taste',pat:['G','G','D'],prof:{pr:[.5,.6],py:[.1,.2],pp:[.38,.5]},desc:'樹林茂密。野生種原特別好吃，常帶漸層花紋。',
+    objs:[{f:OBJ.tree,w:6},{f:OBJ.mushroom,w:2},{f:OBJ.fern,w:3,flat:1},{f:OBJ.log,w:1.5}],thumb:[['fern',100,86],['tree',40,84],['tree',132,62],['mushroom',84,80],['tree',92,44]]},
+  snow:{n:'雪原',ch:'雪',base:'#EEF4F6',patch:'#DCE7EE',patch2:'#FFFFFF',dens:10,crops:[['broccoli',3],['sweetpotato',2],['strawberry',2],['eggplant',2]],bias:'speed',prof:{pr:[.04,.12],py:[.04,.12],pp:[.02,.08]},desc:'寒冷少雨。野生種原長得特別快，常見白色果實。',
+    objs:[{f:OBJ.pine,w:5},{f:OBJ.drift,w:3,flat:1},{f:OBJ.icepond,w:1.5,flat:1},{f:OBJ.snowrock,w:2},{f:OBJ.sparkle,w:3,flat:1}],thumb:[['icepond',112,80],['drift',36,84],['pine',46,72],['pine',128,52],['snowrock',84,62]]},
+  marsh:{n:'濕地',ch:'澤',base:'#93C27E',patch:'#7FB06C',patch2:'#A7D08F',dens:11,crops:[['eggplant',4],['bittergourd',2],['zucchini',2],['pumpkin',2]],bias:null,surfFix:true,prof:{pr:[.3,.4],py:[.04,.1],pp:[.66,.76]},desc:'水氣充沛。野生種原的表面特別粗糙，常見紫色果實。',
+    objs:[{f:OBJ.pond,w:2.5,flat:1},{f:OBJ.reeds,w:5},{f:OBJ.mud,w:2,flat:1},{f:OBJ.marshtuft,w:4,flat:1}],thumb:[['pond',96,76],['mud',30,82],['reeds',40,70],['reeds',140,58],['marshtuft',120,90]]}
+};
+const BIOME_KEYS=Object.keys(BIOMES);
+
+// --- 野生種原 ---
+function makeWild(crop,bk,rare){
+  const B=BIOMES[bk],o={},hi=k=>B.bias===k?pickIdx(10,rare?8:6):pickIdx(10,rare?2:1);
+  o.yield=arr(10,.2,.34,hi('yield'),[.8,.93]);
+  o.taste=arr(10,.18,.32,hi('taste'),[.82,.95]);
+  o.speed=arr(10,.25,.45,hi('speed'),[.8,.92]);
+  o.resist=arr(10,.25,.38,hi('resist'),[.82,.95]);
+  o.shape=arr(8,.06,.22,pickIdx(8,rare?4+Math.floor(rnd()*2):1+Math.floor(rnd()*3)),[.85,.97]);
+  const rb=rnd();o.ratio=arr(4,rb*.6+.15,rb*.6+.25);
+  o.twist=arr(4,.05,.15,pickIdx(4,bk==='marsh'?2+Math.floor(rnd()*2):Math.floor(rnd()*3)),[.8,.9]);
+  const prof=rnd()<0.65?B.prof:PROFILES[Math.floor(rnd()*PROFILES.length)];
+  for(const k of ['pr','py','pp'])o[k]=Array.from({length:4},()=>r3(rr(prof[k])));
+  o.pg=Array.from({length:4},()=>r3(prof.pg?rr(prof.pg):.03+rnd()*.08));
+  if(bk!=='snow'&&rnd()<0.4){const hk=['pr','py','pp','pg'][Math.floor(rnd()*4)];o[hk][Math.floor(rnd()*4)]=r3(.86+rnd()*.06)}
+  const rs=rnd()<0.5?'R':'B',pl=B.pat||['T','D','G'],rp=pl[Math.floor(rnd()*pl.length)];
+  o.surf=B.surfFix?['B','B']:(rare&&rnd()<0.5?[rs,rs]:['S',rs]);
+  const surfHomo=!B.surfFix&&o.surf[0]===o.surf[1]&&o.surf[0]!=='S';
+  o.pat=rare&&!surfHomo?[rp,rp]:['N',rp];
+  o.spec=['n','n'];
+  return line(o);
+}
+function wildName(bk,crop,rare){
+  const used=new Set(regList.map(r=>r.norm));state.lots.forEach(l=>used.add(norm(l.name)));
+  const p=(rare?'珍':'野')+BIOMES[bk].ch;
+  for(let k=0;k<300;k++){const n=p+NAME_A[Math.floor(rnd()*NAME_A.length)]+CROPS[crop].short;if(!used.has(norm(n)))return n}
+  return p+CROPS[crop].short+Math.floor(rnd()*900+100);
+}
+function giveWild(bk,rare){
+  const crop=wpickR(BIOMES[bk].crops,rnd)[0],g=makeWild(crop,bk,rare),name=wildName(bk,crop,rare),ph=phen(g,crop);
+  state.lots.unshift({id:state.nextLot++,lid:'L'+(state.nextLid++),crop,name,source:`${BIOMES[bk].n}撿到的${rare?'珍稀種原':'野生種原'}`,m:g,f:g,count:rare?3:5,germ:GERM[ph.tier]});
+  registerOriginals([{crop,name,g}],rare?'珍稀種原':'野生種原');
+  return {crop,name};
+}
+
+// --- 道具外觀 ---
+function itemArt(x,y,t){
+  let s='';
+  if(t==='wild'||t==='rare'){
+    const c=t==='rare'?'#F2C230':'#C08A55',c2=t==='rare'?'#FFE68A':'#DDB07C';
+    s+=`<path d="M${x-10} ${y-1} Q${x-13} ${y-15} ${x-5} ${y-18} L${x+5} ${y-18} Q${x+13} ${y-15} ${x+10} ${y-1} Q${x} ${y+2} ${x-10} ${y-1}Z" fill="${c}" stroke="${OL}" stroke-width="1.4" stroke-linejoin="round"/><path d="M${x-5} ${y-18} L${x-8} ${y-24} L${x+8} ${y-24} L${x+5} ${y-18}Z" fill="${c2}" stroke="${OL}" stroke-width="1.3" stroke-linejoin="round"/><path d="M${x-6} ${y-18} H${x+6}" stroke="#8A2A1E" stroke-width="2"/><path d="M${x} ${y-4} C${x-7} ${y-6} ${x-7} ${y-13} ${x} ${y-14} C${x+7} ${y-13} ${x+7} ${y-6} ${x} ${y-4}Z M${x} ${y-4} V${y-13}" fill="#5FB043" stroke="#2F6B1E" stroke-width="1"/>`;
+    if(t==='rare')s+=`<path d="M${x+11} ${y-30} l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6z" fill="#FFF6C2" stroke="#B9840F" stroke-width="1"/>`;
+  }else{
+    const l=+t[1],band=['','#C98A4B','#B8C4CE','#F2C230'][l];
+    s+=`<path d="M${x-10} ${y} L${x-12} ${y-15} Q${x-12} ${y-21} ${x-6} ${y-22} L${x+6} ${y-22} Q${x+12} ${y-21} ${x+12} ${y-15} L${x+10} ${y} Z" fill="#F4E6C4" stroke="${OL}" stroke-width="1.4" stroke-linejoin="round"/><path d="M${x-5} ${y-22} l-2 -5 M${x} ${y-22} v-6 M${x+5} ${y-22} l2 -5" stroke="${OL}" stroke-width="1.4" stroke-linecap="round"/><rect x="${x-11.5}" y="${y-17}" width="23" height="6" fill="${band}" stroke="${OL}" stroke-width="1"/>`;
+    for(let k=0;k<l;k++)s+=`<circle cx="${x-4+k*4}" cy="${y-14}" r="1.2" fill="#FFFFFF"/>`;
+    s+=t[0]==='g'?`<path d="M${x} ${y-2} V${y-7} M${x} ${y-7} q-5 0 -6 -3 q5 -1 6 3 q1 -4 6 -3 q-1 3 -6 3" stroke="#2F6B1E" stroke-width="1" fill="#5FB043" stroke-linejoin="round"/>`:`<ellipse cx="${x-4}" cy="${y-5}" rx="2" ry="2.8" fill="#9A6A3A"/><ellipse cx="${x}" cy="${y-6}" rx="2" ry="2.8" fill="#B98A5A"/><ellipse cx="${x+4}" cy="${y-5}" rx="2" ry="2.8" fill="#9A6A3A"/>`;
+  }
+  return s;
+}
+const itemIcon=t=>`<svg viewBox="-16 -32 32 36" width="36" height="40" aria-hidden="true">${itemArt(0,0,t)}</svg>`;
+function itemSVG(it,hl){
+  return `<g data-item="${it.key}" role="button" aria-label="${esc(itemName(it.t))}">${hl?`<ellipse cx="${f1(it.x)}" cy="${f1(it.y+1)}" rx="20" ry="7" fill="none" stroke="#FFD54A" stroke-width="3" stroke-dasharray="5 3"/>`:''}${shadow(it.x,it.y+1,11)}<g class="bob"><circle cx="${f1(it.x)}" cy="${f1(it.y-12)}" r="19" fill="#FFFFFF" opacity=".28"/>${itemArt(Math.round(it.x),Math.round(it.y),it.t)}</g></g>`;
+}
+
+// --- 地圖區塊（無限延伸，固定隨機種子產生） ---
+let exBiome='desert',exMe={x:0,y:-10},hoverItem=null,exKey='',exRg=null;
+const exCache=new Map(),exItemCache=new Map();
+function exChunk(bk,cx,cy){
+  const key=bk+'|'+cx+'|'+cy;let c=exCache.get(key);if(c)return c;
+  if(exCache.size>400)exCache.clear();
+  const B=BIOMES[bk],R=seededRnd(hashStr('t|'+key)),x0=cx*EXC,y0=cy*EXC;let flat='';const tall=[];
+  for(let k=0;k<3;k++)flat+=`<path d="${blob(x0+R()*EXC,y0+R()*EXC,60+R()*70,36+R()*46,R,10,0.35)}" fill="${R()<0.6?B.patch:B.patch2}" opacity=".85"/>`;
+  for(let k=0;k<B.dens;k++){
+    const x=x0+16+R()*(EXC-32),y=y0+16+R()*(EXC-32),o=wpickR(B.objs,R);
+    if(Math.hypot(x-EXGATE[0],(y-EXGATE[1]+20)*1.2)<95){R();continue}
+    const svg=o.f(x,y,R);if(o.flat)flat+=svg;else tall.push([y,svg]);
+  }
+  c={flat,tall};exCache.set(key,c);return c;
+}
+function exItems(bk,cx,cy){
+  const key=bk+'|'+cx+'|'+cy+'|'+state.ex.day;let c=exItemCache.get(key);if(c)return c;
+  if(exItemCache.size>400)exItemCache.clear();
+  const R=seededRnd(hashStr('i|'+key)),x0=cx*EXC,y0=cy*EXC,out=[];
+  let n=R()<0.6?1:0;if(R()<0.18)n++;
+  for(let k=0;k<n;k++){const t=wpickR(IW,R)[0],x=x0+30+R()*(EXC-60),y=y0+30+R()*(EXC-60);if(Math.hypot(x-EXGATE[0],y-EXGATE[1])<70)continue;out.push({key:key+'|'+k,x,y,t})}
+  exItemCache.set(key,out);return out;
+}
+function camRect(){const vw=window.innerWidth,vh=window.innerHeight,k=vw/400,w=vw/k,h=vh/k,m=curMe();return {x:m.x-w/2,y:m.y-h*0.55,w,h}}
+function exRange(r){const cx0=Math.floor((r.x-90)/EXC),cx1=Math.floor((r.x+r.w+90)/EXC),cy0=Math.floor((r.y-130)/EXC),cy1=Math.floor((r.y+r.h+90)/EXC);return {cx0,cx1,cy0,cy1,key:[cx0,cx1,cy0,cy1].join(',')}}
+function exVisibleItems(){if(!exRg||!state.ex)return [];const out=[];for(let cy=exRg.cy0;cy<=exRg.cy1;cy++)for(let cx=exRg.cx0;cx<=exRg.cx1;cx++)for(const it of exItems(exBiome,cx,cy))if(!state.ex.got.includes(it.key))out.push(it);return out}
+function exploreWorld(){
+  ensureEx();
+  const B=BIOMES[exBiome],r=camRect();exRg=exRange(r);exKey=exRg.key;
+  let s=`<rect x="${f1(r.x-900)}" y="${f1(r.y-900)}" width="${f1(r.w+1800)}" height="${f1(r.h+1800)}" fill="${B.base}"/>`;const tall=[];
+  for(let cy=exRg.cy0;cy<=exRg.cy1;cy++)for(let cx=exRg.cx0;cx<=exRg.cx1;cx++){const c=exChunk(exBiome,cx,cy);s+=c.flat;for(const t of c.tall)tall.push(t)}
+  tall.sort((a,b)=>a[0]-b[0]);for(const t of tall)s+=t[1];
+  s+=`<path d="${blob(EXGATE[0],EXGATE[1]-6,46,16,seededRnd(9),9,0.2)}" fill="#E9D3A0" opacity=".9"/>`+gateSVG(EXGATE[0],EXGATE[1],'回農場');
+  for(const it of exVisibleItems())s+=itemSVG(it,it.key===hoverItem);
+  return s;
+}
+function biomeThumb(k){
+  const B=BIOMES[k],R=seededRnd(hashStr('thumb|'+k));
+  let s=`<rect width="160" height="96" fill="${B.base}"/><path d="${blob(44,66,52,20,R)}" fill="${B.patch}"/><path d="${blob(124,34,42,14,R)}" fill="${B.patch2}"/>`;
+  const flatOf=o=>!!(B.objs.find(q=>q.f===OBJ[o])||{}).flat;
+  const items=B.thumb.map(([o,x,y])=>({o,x,y})).sort((a,b)=>flatOf(a.o)!==flatOf(b.o)?(flatOf(a.o)?-1:1):a.y-b.y);
+  for(const t of items)s+=`<g transform="translate(${t.x} ${t.y}) scale(.72) translate(${-t.x} ${-t.y})">${OBJ[t.o](t.x,t.y,R)}</g>`;
+  return `<svg viewBox="0 0 160 96" width="116" height="70" aria-hidden="true">${s}</svg>`;
+}
+function goExplore(bk){
+  closePanel();closeSheet();
+  if(viewing){if(viewing.unsub)viewing.unsub();viewing=null}
+  selDecor=null;renderDecorEdit();ensureEx();
+  scene='explore';exBiome=bk;exMe={x:0,y:-10};hoverPlot=null;hoverStall=null;hoverItem=null;exKey='';
+  joinFarm('ex_'+bk);renderHUD();renderWorld();renderChars();updateCam();refreshAct();
+  toast(`來到${BIOMES[bk].n}了！走近發亮的袋子，按「撿起」`);
+}
+function pickItem(it){
+  ensureEx();
+  if(state.ex.got.includes(it.key))return;
+  if(state.ex.picks>=EX_LIMIT){toast(`今天已經撿了 ${EX_LIMIT} 件，明天再來吧`);return}
+  state.ex.got.push(it.key);state.ex.picks++;
+  let msg;
+  if(it.t==='wild'||it.t==='rare'){const w=giveWild(exBiome,it.t==='rare');msg=`撿到${it.t==='rare'?'珍稀':'野生'}種原「${w.name}」（${CROPS[w.crop].n}），放進種子袋了`}
+  else{state.items[it.t]=(state.items[it.t]||0)+1;msg=`撿到${itemName(it.t)}`}
+  save();hoverItem=null;renderWorld();refreshAct();
+  const left=EX_LIMIT-state.ex.picks;toast(msg+(left?`，今天還能撿 ${left} 件`:'，今天的份撿完了'));
+}
+function renderExplore(){
+  ensureEx();
+  const el=document.getElementById('exploreBody'),left=EX_LIMIT-state.ex.picks;
+  let h=`<p class="note">選一個地區出發。地圖會一直延伸下去，路上能撿到肥料和野生種原。每天最多撿 ${EX_LIMIT} 件，今天還能撿 ${left} 件。</p>`;
+  if(scene==='explore')h+=`<button class="btn" data-ex="home" style="margin:0 0 12px">回農場</button>`;
+  h+=BIOME_KEYS.map(k=>{const B=BIOMES[k];return `<button class="biome" data-ex="${k}"${scene==='explore'&&exBiome===k?' aria-current="true"':''}>${biomeThumb(k)}<span class="lr"><b>${B.n}${scene==='explore'&&exBiome===k?'（你在這裡）':''}</b><span class="meta">${B.desc}</span><span class="meta">可能撿到：${B.crops.map(c=>CROPS[c[0]].n).join('、')}</span></span></button>`}).join('');
+  h+=`<h3>我的道具</h3><div class="items">${IKEYS.map(k=>`<div class="itm">${itemIcon(k)}<span class="lr"><b>${itemName(k)}</b><span class="meta">${itemEff(k)}</span><span class="meta">持有 ${state.items[k]} 個</span></span></div>`).join('')}</div><p class="note">發芽肥料在播種時選用。增產肥料在植株的詳細資料裡使用，每株只能用一次。</p>`;
+  el.innerHTML=h;
+}
+document.getElementById('exploreBody').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b||!state)return;if(b.dataset.ex==='home'){closePanel();goFarm();return}goExplore(b.dataset.ex)});
+
 // ===== 點擊場景 =====
 sceneEl.addEventListener('click',e=>{
   if(!state)return;
   const dg=e.target.closest('[data-decor]'),g=e.target.closest('[data-plot]'),stg=e.target.closest('[data-stall]');
+  if(scene==='explore'){const ie=e.target.closest('[data-item]');if(ie){const it=exVisibleItems().find(x=>x.key===ie.dataset.item);if(it){const m=curMe();if(Math.hypot(it.x-m.x,it.y-m.y)<80)pickItem(it);else toast('走近一點才能撿起來')}}return}
   if(scene==='market'){if(stg)openStall(+stg.dataset.stall);return}
   if(viewing){if(g){const p=viewing.st&&viewing.st.plots[+g.dataset.plot];if(p)openFriendPlot(p)}return}
   if(dg){selDecor=+dg.dataset.decor;renderWorld();renderDecorEdit();return}
@@ -1414,6 +1655,11 @@ function updateMe(){const g=document.getElementById('meG');if(!g){renderChars();
 // ===== 互動按鈕 =====
 function nearest(){
   const m=curMe();
+  if(scene==='explore'){
+    if(Math.hypot(EXGATE[0]-m.x,EXGATE[1]-m.y)<56)return {t:'gate'};
+    let best=null,bdist=46;for(const it of exVisibleItems()){const d=Math.hypot(it.x-m.x,(it.y-m.y)*1.3);if(d<bdist){bdist=d;best=it}}
+    return best?{t:'item',it:best}:null;
+  }
   if(scene==='market'){
     let bi=-1,bdist=1e9;STALLS.forEach(([x,y],i)=>{const d=Math.hypot(x-m.x,(y-m.y)*1.3);if(d<bdist){bdist=d;bi=i}});
     if(bdist<72)return {t:'stall',i:bi};
@@ -1425,7 +1671,8 @@ function nearest(){
 }
 function actInfo(n){
   if(!n)return {label:'互動',on:false};
-  if(n.t==='gate')return {label:scene==='market'?'回農場':'去市集',on:true};
+  if(n.t==='gate')return {label:scene==='farm'?'去市集':'回農場',on:true};
+  if(n.t==='item')return {label:'撿起',on:true};
   if(n.t==='stall')return {label:'攤位',on:true};
   if(viewing){const p=viewing.st&&viewing.st.plots[n.i];return {label:p?'查看':'空地',on:!!p}}
   const p=state.plots[n.i];
@@ -1439,15 +1686,16 @@ function refreshAct(){
   if(!state)return;
   const n=nearest(),a=actInfo(n),b=document.getElementById('actBtn');
   if(b.textContent!==a.label)b.textContent=a.label;b.classList.toggle('off',!a.on);
-  const hp=n&&n.t==='plot'?n.i:null,hs=n&&n.t==='stall'?n.i:null;
-  if(hp!==hoverPlot||hs!==hoverStall){hoverPlot=hp;hoverStall=hs;renderWorld()}
+  const hp=n&&n.t==='plot'?n.i:null,hs=n&&n.t==='stall'?n.i:null,hi=n&&n.t==='item'?n.it.key:null;
+  if(hp!==hoverPlot||hs!==hoverStall||hi!==hoverItem){hoverPlot=hp;hoverStall=hs;hoverItem=hi;renderWorld()}
   const fb=document.getElementById('fertBtn'),p=(!viewing&&scene==='farm'&&hp!=null)?state.plots[hp]:null;
   fb.classList.toggle('off',!(p&&(p.stage==='seedling'||p.stage==='fruit')&&!p.fert));
 }
 function interact(){
   const n=nearest();
-  if(!n){toast('走到作物、攤位或大門旁邊再按');return}
-  if(n.t==='gate'){scene==='market'?goFarm():goMarket();return}
+  if(!n){toast(scene==='explore'?'走到發亮的袋子旁邊再按':'走到作物、攤位或大門旁邊再按');return}
+  if(n.t==='gate'){scene==='farm'?goMarket():goFarm();return}
+  if(n.t==='item'){pickItem(n.it);return}
   if(n.t==='stall'){openStall(n.i);return}
   if(viewing){const p=viewing.st&&viewing.st.plots[n.i];if(p)openFriendPlot(p);return}
   const p=state.plots[n.i];
@@ -1483,7 +1731,8 @@ function walkLoop(t){
   const mv=Math.hypot(vx,vy)>0.12&&state&&!curPanel;
   if(mv){
     const m=curMe(),{W,H}=scene==='market'?WORLD.market:WORLD.farm,len=Math.max(1,Math.hypot(vx,vy));
-    m.x=clamp(m.x+vx/len*Math.min(1,len)*160*dt,24,W-24);m.y=clamp(m.y+vy/len*Math.min(1,len)*130*dt,74,H-26);
+    if(scene==='explore'){m.x+=vx/len*Math.min(1,len)*160*dt;m.y+=vy/len*Math.min(1,len)*130*dt}
+    else{m.x=clamp(m.x+vx/len*Math.min(1,len)*160*dt,24,W-24);m.y=clamp(m.y+vy/len*Math.min(1,len)*130*dt,74,H-26)}
     if(ab(vx)>0.15)meDir=vx<0?-1:1;walkPh+=dt*12;updateMe();updateCam();pushPos(false);refreshAct();
     raf=requestAnimationFrame(walkLoop);
   }else{raf=null;walkPh=0;if(state){updateMe();pushPos(true);if(scene==='farm'&&!viewing)save()}}
