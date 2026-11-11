@@ -139,6 +139,7 @@ nav button{padding:8px 2px;font-size:15px}
 #tut{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(70px + env(safe-area-inset-bottom,0px));width:min(460px,calc(100vw - 24px));background:var(--paper);border:2px solid var(--mustard);border-radius:16px;padding:10px 12px;z-index:25;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 #tut[hidden]{display:none}
 .tuth{display:flex;align-items:center;gap:8px;font-weight:700}
+.tuth .gp{width:44px;height:44px;border-radius:50%;border:2px solid #5A3416;background:#fff;flex:none}
 .tuth .stp{margin-left:auto;font-size:12px;color:var(--muted);font-weight:400}
 #tutText{margin:6px 0;font-size:15px}
 .tutb{display:flex;gap:8px;justify-content:flex-end}
@@ -265,6 +266,7 @@ body.game{background:#5E9E38}
   <button id="ibExplore" data-open="explore"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke-width="1.2"/></svg><span>探索</span></button>
   <button data-open="social"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 15.5c2.8-.6 6 1.2 6 4.5"/></svg><span>朋友</span></button>
   <button id="ibDecor" data-open="decor"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3 2-5 5-5 8a5 5 0 0 0 10 0c0-3-2-6-5-8z"/><path d="M12 16v5M9 21h6"/></svg><span>裝飾</span></button>
+  <button id="ibBuild" data-do="build"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l9-5 9 5-9 5z"/><path d="M12 3v6M9 6h6"/></svg><span>建設</span></button>
   <button data-do="avatar"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>角色</span></button>
   <button id="ordersBtn"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v18l-5-3-5 3z"/><path d="M10 8h4M10 12h4"/></svg><span>訂單</span><i id="ordersBadge" hidden></i></button>
   <button data-open="settings"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>設定</span></button>
@@ -278,10 +280,10 @@ body.game{background:#5E9E38}
 <div class="panel" id="p-bag" hidden role="dialog" aria-label="種子袋"><div class="ph"><h2>種子袋</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><div class="bagtools"><div class="filters" id="bagFilter"></div><label class="sortl">排列<select id="bagSort"><option value="new">最新放入</option><option value="tier">稀有度</option><option value="total">總評</option><option value="quality">品質分</option><option value="perf">完美度</option><option value="stab">穩定度</option><option value="count">數量</option><option value="name">名稱</option></select></label></div><div id="bag"></div></div></div>
 <div class="panel" id="p-dex" hidden role="dialog" aria-label="品種圖鑑"><div class="ph"><h2>品種圖鑑</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><p class="note">完全穩定、而且外觀和既有品種不同的作物，才能登錄成新品種。發明者的名字會永遠留在這裡。</p><div class="filters" id="dexFilter"></div><div id="dex"></div></div></div>
 <div class="panel" id="p-social" hidden role="dialog" aria-label="朋友"><div class="ph"><h2>朋友</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><button class="btn" id="avatarBtn2" style="margin:0 0 8px">打扮我的角色</button><h3 style="margin-top:4px">朋友</h3><div id="friends"></div><h3>公共聊天室</h3><div id="chat" aria-live="polite"></div><div class="chatbar"><input id="chatIn" maxlength="300" placeholder="輸入訊息" aria-label="聊天訊息" aria-describedby="chatErr"><button class="mini big" id="chatSend">傳送</button></div><div class="err" id="chatErr"></div></div></div>
-<div class="panel" id="p-decor" hidden role="dialog" aria-label="裝飾庭院"><div class="ph"><h2>裝飾庭院</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><p class="note">先走到農場下方的庭院，再選一個裝飾，它會放在角色腳邊。點已放好的裝飾可以移動或收起。</p><div class="filters" id="decorCats"></div><div class="decorItems" id="decorItems"></div></div></div>
+<div class="panel" id="p-decor" hidden role="dialog" aria-label="裝飾農場"><div class="ph"><h2>裝飾農場</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><p class="note">所有裝飾都免費。走到想放的位置，選一個裝飾，它會放在角色腳邊；點已放好的裝飾可以移動或收起。「標示」裡有大、小告示牌，可以寫 2 到 8 個字。</p><div class="filters" id="decorCats"></div><div class="decorItems" id="decorItems"></div></div></div>
 <div class="panel" id="p-explore" hidden role="dialog" aria-label="探索世界"><div class="ph"><h2>探索世界</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb" id="exploreBody"></div></div>
 <div class="panel" id="p-settings" hidden role="dialog" aria-label="設定"><div class="ph"><h2>設定</h2><button class="xbtn" data-close aria-label="關閉">✕</button></div><div class="pb"><div class="settings"><button class="btn" id="speedBtn"></button><p class="note">加速只用於測試流程，會讓所有生長時間變快 20 倍。</p><button class="btn warn" id="resetBtn">重新開始</button><p class="note" id="account" style="margin-top:16px"></p><button class="btn" id="logoutBtn">登出</button></div></div></div>
-<div id="tut" hidden role="status"><div class="tuth"><svg viewBox="-12 -12 24 24" width="30" height="30" aria-hidden="true"><circle r="11" fill="#F1C27D"/><path d="M-11 -2 Q-11 -12 0 -12 Q11 -12 11 -2 L14 -2 L-14 -2Z" fill="#E2C46B"/><circle cx="-4" cy="1" r="1.3" fill="#2A1E18"/><circle cx="4" cy="1" r="1.3" fill="#2A1E18"/><path d="M-5 5 Q0 9 5 5" stroke="#7A5A3A" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>農會阿伯<span class="stp" id="tutStep"></span></div><p id="tutText"></p><div class="tutb"><button id="tutSkip">跳過教學</button><button id="tutNext" hidden></button></div></div>
+<div id="tut" hidden role="status"><div class="tuth"><img class="gp" src="data:image/jpeg;base64,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" width="44" height="44" alt="">農會阿伯<span class="stp" id="tutStep"></span></div><p id="tutText"></p><div class="tutb"><button id="tutSkip">跳過教學</button><button id="tutNext" hidden></button></div></div>
 <div id="backdrop"></div>
 <div id="sheet" role="dialog" aria-modal="true" aria-label="詳細資料"><div class="shead"><div class="grip"></div><button id="sheetX" class="xbtn" aria-label="關閉">✕</button></div><div class="sheet-wrap" id="sheetBody"></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -445,7 +447,7 @@ function genName(crop,used){
 let state=null,uiCrop='all';
 const lc=l=>l.seeds?l.seeds.length:(l.count||0);
 function drawSeed(l){if(l.seeds&&l.seeds.length)return l.seeds.splice(Math.floor(rnd()*l.seeds.length),1)[0];l.count--;return child(l.m,l.f).g}
-function newGame(){state={v:1,coins:1000,speed:1,last:Date.now(),plots:Array(64).fill(null),selfC:{},decor:[],avatar:{...AV_DEF},tut:{step:0,done:false},orders:{},me:{x:230,y:545},lots:[],nextLine:1,nextLot:1,nextLid:1,counts:{},given:[],items:{},ex:null}}
+function newGame(){state={v:1,mapV:MAPV,plotPos:defaultPos(),coins:1000,speed:1,last:Date.now(),plots:Array(64).fill(null),selfC:{},decor:[],avatar:{...AV_DEF},tut:{step:0,done:false},orders:{},me:{...ME0},lots:[],nextLine:1,nextLot:1,nextLid:1,counts:{},given:[],items:{},ex:null}}
 function ensureCrops(){
   if(!state.given)state.given=[];
   const used=new Set(regList.map(r=>r.norm));state.lots.forEach(l=>used.add(norm(l.name)));
@@ -463,8 +465,17 @@ function migrate(o){
   while(o.plots.length<64)o.plots.push(null);
   if(!o.selfC)o.selfC={};
   if(!o.items)o.items={};
-  if(!o.decor)o.decor=[];if(!o.avatar)o.avatar={...AV_DEF};if(!o.tut)o.tut={step:0,done:false};if(!o.orders)o.orders={};if(!o.me||o.me.x>440)o.me={x:230,y:545};
-  if(o.decor.some(d=>d.x>460))o.decor=o.decor.map(d=>({...d,x:Math.round(clamp(40+(d.x-780)/356*380,40,420)),y:Math.round(clamp(575+(d.y-84)/202*245,575,820))}));
+  if(!o.decor)o.decor=[];if(!o.avatar)o.avatar={...AV_DEF};if(!o.tut)o.tut={step:0,done:false};if(!o.orders)o.orders={};
+  if(!o.mapV){
+    if(!o.me||o.me.x>440)o.me={x:230,y:545};
+    if(o.decor.some(d=>d.x>460))o.decor=o.decor.map(d=>({...d,x:Math.round(clamp(40+(d.x-780)/356*380,40,420)),y:Math.round(clamp(575+(d.y-84)/202*245,575,820))}));
+    o.decor=o.decor.map(d=>({...d,x:d.x+MOX,y:d.y+MOY}));
+    o.me={x:o.me.x+MOX,y:o.me.y+MOY};
+    o.mapV=MAPV;
+  }
+  if(!o.plotPos)o.plotPos=defaultPos();
+  while(o.plotPos.length<o.plots.length)o.plotPos.push(null);
+  while(o.plots.length<o.plotPos.length)o.plots.push(null);
   const byName={};
   for(const x of [...o.lots,...o.plots.filter(Boolean)])if(x.lid)byName[x.name]=x.lid;
   const lidFor=n=>byName[n]||(byName[n]='L'+(o.nextLid++));
@@ -530,7 +541,7 @@ function collectSales(){
   for(const l of listings){
     if(l.sellerUid!==uid||!l.sold||collecting.has(l.id))continue;
     collecting.add(l.id);
-    db.collection('listings').doc(l.id).delete().then(()=>{state.coins+=l.price;save();renderCoins();toast(`${l.buyerName||'有人'}買了你的「${l.name}」，得到 ${l.price} 金幣`)}).catch(()=>collecting.delete(l.id));
+    db.collection('listings').doc(l.id).delete().then(()=>{state.coins+=l.price;save();renderCoins();toast(`${l.buyerName||'有人'}買了你的「${l.kind==='item'?itemName(l.item):l.name}」，得到 ${l.price} 金幣`)}).catch(()=>collecting.delete(l.id));
   }
 }
 
@@ -863,6 +874,7 @@ function renderSheet(){
   if(sheet.fplot){sb.innerHTML=fplotHTML();return}
   if(sheet.avatar){sb.innerHTML=avatarEditorHTML();return}
   if(sheet.orders){sb.innerHTML=ordersHTML();return}
+  if(sheet.build){sb.innerHTML=buildHTML();return}
   if(sheet.sign!=null){sb.innerHTML=signHTML();bindSign();return}
   if(sheet.lot!=null){const l=state.lots.find(x=>x.id===sheet.lot);if(!l){closeSheet();return}sb.innerHTML=lotSheetHTML(l)+'<button class="btn" data-act="close">關閉</button>';bindLotForm(l);return}
   if(sheet.visit){sb.innerHTML=visitHTML();return}
@@ -884,6 +896,7 @@ function renderSheet(){
     if([1,2,3].some(l=>it['g'+l]>0))h+=`<div class="ferts"><span class="lbl">搭配發芽肥料（播種時用掉一個）</span><button class="fchip" data-gf="0" aria-pressed="${!gf}">不用</button>${[1,2,3].filter(l=>it['g'+l]>0).map(l=>`<button class="fchip" data-gf="${l}" aria-pressed="${gf===l}">${LV[l]} +${Math.round(GB[l]*100)}%（${it['g'+l]}）</button>`).join('')}</div>`;
     if(!lots.length)h+=`<p class="note">這個分類沒有種子。</p>`;
     h+=lots.map(l=>`<button class="pick" data-act="plant" data-lot="${l.id}">${fruitSVG(phen(l.m,l.crop),l.crop,44)}<span><b>${esc(l.name)}</b><span class="meta">${CROPS[l.crop].n}・剩 ${lc(l)} 顆・發芽率 ${Math.round(Math.min(0.99,l.germ+GB[gf])*100)}%${gf?'（含肥料）':''}</span></span></button>`).join('');
+    h+=`<h3>整理農地</h3><p class="note">空的農地可以移到角色腳邊，或拆除並退回 ${PLOT_REFUND} 金幣。</p><div class="row2"><button class="btn" data-act="pmove">移到我腳邊</button><button class="btn warn" data-act="pdel">${sheet.confirm?'再按一次確定拆除':'拆除這塊農地'}</button></div>`;
   }else{
     const ph=phen(p.g,p.crop),lvl=p.stage==='seedling'?1:p.stage==='ripe'?3:2;
     h+=`<h2>${esc(pname(p))}</h2><p class="stage">${CROPS[p.crop].n}・第 ${i+1} 塊土地・${stageLabel(p)}${p.pollen?`・${p.pollen.type==='cross'?`與 ${esc(p.pollen.fatherName)} 雜交`:'自己授粉'}`:''}</p>`;
@@ -924,6 +937,7 @@ sb.addEventListener('click',e=>{
   if(sheet.avatar)return avatarAction(b);
   if(sheet.orders)return orderAction(b);
   if(sheet.sign!=null)return signAction(b);
+  if(sheet.build)return buildAction(b);
   if(sheet.fplot)return;
   if(sheet.lot!=null)return lotAction(b.dataset.act,b);
   if(sheet.dm){if(b.dataset.act==='dmsend')sendDM();return}
@@ -948,6 +962,8 @@ sb.addEventListener('click',e=>{
   if(act==='uproot'&&p){if(!sheet.confirm){sheet.confirm=true;renderSheet();return}state.plots[i]=null;toast('已拔掉')}
   if(act==='sell'&&p){const ph=phen(p.g,p.crop),n=Math.max(1,Math.round(2+8*ph.ab.yield/100)),total=Math.round(n*CROPS[p.crop].price*ph.ab.taste/50);state.coins+=total;state.plots[i]=null;toast(`賣出 ${n} 個，得到 ${total} 金幣`);harvested(ph)}
   if(act==='seed'&&p)takeSeeds(i);
+  if(act==='pmove'&&!p){if(plotMove(i)){save();closeSheet();renderAll()}return}
+  if(act==='pdel'&&!p){if(!sheet.confirm){sheet.confirm=true;renderSheet();return}state.plotPos[i]=null;state.coins+=PLOT_REFUND;save();closeSheet();renderAll();renderCoins();toast(`已拆除，退回 ${PLOT_REFUND} 金幣`);return}
   save();sheet.stage=state.plots[i]?state.plots[i].stage:'empty';sheet.confirm=false;sheet.crossFrom=null;renderAll();renderSheet();
 });
 function pollinate(i,j){
@@ -1088,7 +1104,8 @@ const DECOR=[
   dd('cart','木推車','設施',(x,y)=>`<circle cx="${x-8}" cy="${y-20}" r="4" fill="#E25B4A"/><circle cx="${x}" cy="${y-21}" r="4" fill="#F2C94C"/><rect x="${x-16}" y="${y-18}" width="28" height="12" fill="${WC}" stroke="${WD}"/><circle cx="${x-6}" cy="${y-4}" r="5" fill="none" stroke="${WD}" stroke-width="2.5"/><path d="M${x+12} ${y-14} L${x+22} ${y-8}" stroke="${WD}" stroke-width="3"/>`),
   dd('rack','工具架','設施',(x,y)=>`<rect x="${x-16}" y="${y-30}" width="32" height="3" fill="${WD}"/><path d="M${x-14} ${y-30} V${y} M${x+14} ${y-30} V${y}" stroke="${WD}" stroke-width="3"/><path d="M${x-6} ${y-27} V${y-6} M${x+2} ${y-27} V${y-8} M${x+8} ${y-27} V${y-10}" stroke="#777" stroke-width="2"/><path d="M${x-9} ${y-6} h6" stroke="#777" stroke-width="3"/>`),
   dd('greenhouse','溫室','設施',(x,y)=>`<path d="M${x-26} ${y} V${y-22} L${x} ${y-38} L${x+26} ${y-22} V${y}Z" fill="#BFE3EE" fill-opacity=".75" stroke="#7FA9B8" stroke-width="1.5"/><path d="M${x-13} ${y} V${y-30} M${x} ${y} V${y-38} M${x+13} ${y} V${y-30} M${x-26} ${y-11} H${x+26}" stroke="#7FA9B8"/>`),
-  dd('sign','木招牌','標示',(x,y,t)=>`<rect x="${x-2}" y="${y-20}" width="4" height="20" fill="${WD}"/><rect x="${x-26}" y="${y-38}" width="52" height="20" rx="3" fill="${WC}" stroke="${WD}"/><text x="${x}" y="${y-24}" text-anchor="middle" font-size="9" font-weight="700" fill="#3A2614" stroke="none" font-family="Noto Sans TC,sans-serif">${esc(t||'我的農場')}</text>`),
+  dd('sign','大告示牌','標示',(x,y,t)=>{const v=t||'大告示牌',w=Math.max(44,glen(v)*10+14);return `<rect x="${x-2.5}" y="${y-22}" width="5" height="22" fill="${WD}"/><rect x="${x-w/2}" y="${y-42}" width="${w}" height="22" rx="4" fill="${WC}" stroke="${WD}"/><rect x="${x-w/2+3}" y="${y-39}" width="${w-6}" height="16" rx="2" fill="#E9C98F" stroke="none"/><text x="${x}" y="${y-27}" text-anchor="middle" font-size="10" font-weight="700" fill="#3A2614" stroke="none" font-family="Noto Sans TC,sans-serif">${esc(v)}</text>`}),
+  dd('signS','小告示牌','標示',(x,y,t)=>{const v=t||'標示',w=Math.max(26,glen(v)*7.5+10);return `<rect x="${x-1.5}" y="${y-12}" width="3" height="12" fill="${WD}"/><rect x="${x-w/2}" y="${y-25}" width="${w}" height="14" rx="3" fill="#F3E2BC" stroke="${WD}"/><text x="${x}" y="${y-15}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#3A2614" stroke="none" font-family="Noto Sans TC,sans-serif">${esc(v)}</text>`}),
   dd('flag','旗幟','標示',(x,y)=>`<rect x="${x-1}" y="${y-44}" width="2" height="44" fill="#6B6B68"/><path d="M${x+1} ${y-43} Q${x+12} ${y-40} ${x+22} ${y-43} V${y-31} Q${x+12} ${y-28} ${x+1} ${y-31}Z" fill="#3F86C4"/>`),
   dd('mailbox','信箱','標示',(x,y)=>`<rect x="${x-1.5}" y="${y-20}" width="3" height="20" fill="${WD}"/><rect x="${x-9}" y="${y-30}" width="18" height="11" rx="5" fill="#C9473A"/><rect x="${x+7}" y="${y-34}" width="2" height="8" fill="#F2C94C"/>`),
   dd('pond','小池塘','水景',(x,y)=>`<ellipse cx="${x}" cy="${y-6}" rx="28" ry="12" fill="#8E8B82"/><ellipse cx="${x}" cy="${y-7}" rx="24" ry="9" fill="#5B9FD1"/><ellipse cx="${x-8}" cy="${y-9}" rx="5" ry="2" fill="#9CCBEB"/><circle cx="${x+10}" cy="${y-6}" r="3" fill="#4E8A3A"/>`,1),
@@ -1167,31 +1184,54 @@ function avatarSVG(av,flip,bob){
 // ===== 模式、參觀、角色移動 =====
 // ===== 世界與場景 =====
 const COLS=4,ROWS=16,NPLOTS=64;
-function center(i){const c=i%COLS,r=Math.floor(i/COLS);return [76+84*c+(r%2)*42,130+24*r]}
-const WORLD={farm:{W:460,H:930},market:{W:460,H:780}};
-const GATE={farm:[230,880],market:[230,735]};
+// 家園 v2：面積約為舊版的 5.7 倍，舊版內容整體平移到新地圖下方中央
+const MAPV=2,MOX=320,MOY=1270,PLOT_COST=50,PLOT_MAX=160,PLOT_REFUND=25;
+const LX0=76+MOX,LY0=130+MOY;
+function center(i){const c=i%COLS,r=Math.floor(i/COLS);return [LX0+84*c+(r%2)*42,LY0+24*r]}
+function defaultPos(){return Array.from({length:NPLOTS},(_,i)=>center(i))}
+const posOf=(st,i)=>(st&&st.plotPos&&st.plotPos[i])||null;
+const WORLD={farm:{W:1100,H:2200},market:{W:460,H:780}};
+const GATE={farm:[550,2150],market:[230,735]};
+const ME0={x:550,y:1815};
+function snapPos(x,y){
+  let fa=(x-LX0)/42,fb=(y-LY0)/24,a=Math.round(fa),b=Math.round(fb);
+  if((a+b)&1){const da=fa-a,db=fb-b;if(ab(da)>ab(db))a+=da>0?1:-1;else b+=db>0?1:-1}
+  return [LX0+42*a,LY0+24*b];
+}
+function plotSpotErr(st,x,y,skip){
+  const {W,H}=WORLD.farm;
+  if(x<70||x>W-70||y<130||y>H-150)return '這裡太靠近農場邊緣了';
+  if(Math.hypot(x-GATE.farm[0],(y-GATE.farm[1])*1.4)<120)return '大門前面要留通道，換個位置吧';
+  const ps=st.plotPos||[];
+  for(let j=0;j<ps.length;j++){if(j===skip||!ps[j])continue;if(ab(ps[j][0]-x)<2&&ab(ps[j][1]-y)<2)return '這裡已經有農地了'}
+  return '';
+}
+const plotCount=st=>(st.plotPos||[]).filter(Boolean).length;
 const STALLS=[[120,200],[340,200],[120,350],[340,350],[120,500],[340,500],[120,650],[340,650]];
 const AWN=['#D9473A','#3F86C4','#E0A82E','#3F7B38','#8E5CC8','#E0823D','#E26F9A','#3E9E92'];
-let scene='farm',viewing=null,visitMe={x:230,y:840},marketMe={x:230,y:690},hoverPlot=null,hoverStall=null,selDecor=null,curPanel=null;
-const curMe=()=>scene==='market'?marketMe:scene==='explore'?exMe:viewing?visitMe:(state.me||(state.me={x:230,y:545}));
+let scene='farm',viewing=null,visitMe={x:550,y:2100},marketMe={x:230,y:690},hoverPlot=null,hoverStall=null,selDecor=null,curPanel=null;
+const curMe=()=>scene==='market'?marketMe:scene==='explore'?exMe:viewing?visitMe:(state.me||(state.me={...ME0}));
 function gateSVG(x,y,label){return `<g stroke="#4A2A12" stroke-width="1.6" stroke-linejoin="round"><rect x="${x-38}" y="${y-50}" width="8" height="50" rx="2" fill="#B5763C"/><rect x="${x+30}" y="${y-50}" width="8" height="50" rx="2" fill="#B5763C"/><path d="M${x-50} ${y-58} Q${x} ${y-78} ${x+50} ${y-58} L${x+46} ${y-46} Q${x} ${y-64} ${x-46} ${y-46}Z" fill="#D9473A"/><rect x="${x-34}" y="${y-62}" width="68" height="20" rx="6" fill="#FFF3D6"/><text x="${x}" y="${y-47}" text-anchor="middle" font-size="12" font-weight="700" fill="#4A2A12" stroke="none" font-family="Noto Sans TC,sans-serif">${label}</text></g>`}
-const GROUND=(()=>{const R=srand(4242);let t='';for(let k=0;k<70;k++){const x=20+R()*420,y=70+R()*840,r=R();t+=r<0.6?`<path d="M${x.toFixed(0)} ${y.toFixed(0)} l2.5 -6 l2.5 6 M${(x+4).toFixed(0)} ${y.toFixed(0)} l2 -4.5 l2 4.5" stroke="#5FA83A" stroke-width="1.6" fill="none" stroke-linecap="round"/>`:`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="2.6" fill="${['#FFF2A8','#FFB6C9','#FFFFFF','#C9B6FF'][Math.floor(R()*4)]}" stroke="#5A8A2A" stroke-width=".8"/>`}return t})();
+const GROUND=(()=>{const R=srand(4242);let t='';for(let k=0;k<420;k++){const x=30+R()*1040,y=80+R()*2080,r=R();t+=r<0.6?`<path d="M${x.toFixed(0)} ${y.toFixed(0)} l2.5 -6 l2.5 6 M${(x+4).toFixed(0)} ${y.toFixed(0)} l2 -4.5 l2 4.5" stroke="#5FA83A" stroke-width="1.6" fill="none" stroke-linecap="round"/>`:`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="2.6" fill="${['#FFF2A8','#FFB6C9','#FFFFFF','#C9B6FF'][Math.floor(R()*4)]}" stroke="#5A8A2A" stroke-width=".8"/>`}return t})();
+function plotSVG(st,i,hov){
+  const pos=posOf(st,i);if(!pos)return '';
+  const [x,y]=pos,p=st.plots[i];
+  const lbl=p?`第 ${i+1} 塊土地，${CROPS[p.crop].n}「${pname(p)}」，${stageLabel(p)}`:`第 ${i+1} 塊土地，空地`;
+  let s=`<g data-plot="${i}" role="button" aria-label="${esc(lbl)}" stroke="#4A2A12" stroke-width="1.5" stroke-linejoin="round"><polygon points="${x-41},${y} ${x},${y+23} ${x},${y+32} ${x-41},${y+9}" fill="#9C6635"/><polygon points="${x},${y+23} ${x+41},${y} ${x+41},${y+9} ${x},${y+32}" fill="#80502A"/><polygon points="${x},${y-23} ${x+41},${y} ${x},${y+23} ${x-41},${y}" fill="#D9A15F"${hov===i?' stroke="#FFD54A" stroke-width="3.5"':''}/><polygon points="${x},${y-17} ${x+32},${y} ${x},${y+17} ${x-32},${y}" fill="#8C5A32" stroke-width="1"/>`;
+  for(const a of [.3,.5,.7])s+=`<line x1="${x-32+32*a+3}" y1="${y-17*a+1.6}" x2="${x+32*a-3}" y2="${y+17-17*a-1.6}" stroke="#6A4022" stroke-width="2" stroke-linecap="round"/>`;
+  s+=`</g>`;
+  if(p)s+=`<g pointer-events="none" transform="translate(${x} ${y+3}) scale(0.72) translate(${-x} ${-y-3})">${plantSVG(p,x,y+3)}</g>`;
+  return s;
+}
 function farmWorld(st,hov,selD){
-  const {W,H}=WORLD.farm;
-  let s=`<rect x="-600" y="-600" width="${W+1200}" height="${H+1200}" fill="#5E9E38"/><rect x="10" y="60" width="${W-20}" height="${H-70}" rx="34" fill="#8FD45E" stroke="#4E8A2C" stroke-width="3"/>${GROUND}`;
-  s+=`<rect x="22" y="92" width="${W-44}" height="432" rx="24" fill="#7CC350" stroke="#5FA83A" stroke-width="2" stroke-dasharray="8 6"/>`;
-  s+=`<rect x="${YARD.x0-12}" y="${YARD.y0-28}" width="${YARD.x1-YARD.x0+24}" height="${YARD.y1-YARD.y0+38}" rx="24" fill="#A6E07A" stroke="#6DB23F" stroke-width="2"/><text x="${YARD.x0+4}" y="${YARD.y0-10}" font-size="13" font-weight="700" fill="#3F7A22" font-family="Noto Sans TC,sans-serif">庭院</text>`;
-  s+=`<path d="M230 832 V884" stroke="#C9A363" stroke-width="44" stroke-linecap="round"/><path d="M230 832 V884" stroke="#F0D49A" stroke-width="36" stroke-linecap="round"/>`+gateSVG(230,884,'往市集');
-  for(let i=0;i<NPLOTS;i++){
-    const [x,y]=center(i),p=st.plots[i];
-    const lbl=p?`第 ${i+1} 塊土地，${CROPS[p.crop].n}「${pname(p)}」，${stageLabel(p)}`:`第 ${i+1} 塊土地，空地`;
-    s+=`<g data-plot="${i}" role="button" aria-label="${esc(lbl)}" stroke="#4A2A12" stroke-width="1.5" stroke-linejoin="round"><polygon points="${x-41},${y} ${x},${y+23} ${x},${y+32} ${x-41},${y+9}" fill="#9C6635"/><polygon points="${x},${y+23} ${x+41},${y} ${x+41},${y+9} ${x},${y+32}" fill="#80502A"/><polygon points="${x},${y-23} ${x+41},${y} ${x},${y+23} ${x-41},${y}" fill="#D9A15F"${hov===i?' stroke="#FFD54A" stroke-width="3.5"':''}/><polygon points="${x},${y-17} ${x+32},${y} ${x},${y+17} ${x-32},${y}" fill="#8C5A32" stroke-width="1"/>`;
-    for(const a of [.3,.5,.7])s+=`<line x1="${x-32+32*a+3}" y1="${y-17*a+1.6}" x2="${x+32*a-3}" y2="${y+17-17*a-1.6}" stroke="#6A4022" stroke-width="2" stroke-linecap="round"/>`;
-    s+=`</g>`;
-    if(p)s+=`<g pointer-events="none" transform="translate(${x} ${y+3}) scale(0.72) translate(${-x} ${-y-3})">${plantSVG(p,x,y+3)}</g>`;
-  }
-  const dec=(st.decor||[]).map((d,i)=>({...d,i})).sort((a,b)=>((DECOR_MAP[a.t]||{}).flat?-1e4:0)+a.y-((DECOR_MAP[b.t]||{}).flat?-1e4:0)-b.y);
-  for(const d of dec)s+=decorSVG(d,selD===d.i);
+  const {W,H}=WORLD.farm,[gx,gy]=GATE.farm;
+  let s=`<rect x="-600" y="-600" width="${W+1200}" height="${H+1200}" fill="#5E9E38"/><rect x="10" y="60" width="${W-20}" height="${H-70}" rx="40" fill="#8FD45E" stroke="#4E8A2C" stroke-width="3"/>${GROUND}`;
+  s+=`<path d="M${gx} ${gy-48} V${gy+4}" stroke="#C9A363" stroke-width="44" stroke-linecap="round"/><path d="M${gx} ${gy-48} V${gy+4}" stroke="#F0D49A" stroke-width="36" stroke-linecap="round"/>`+gateSVG(gx,gy+4,'往市集');
+  const all=[];
+  (st.decor||[]).forEach((d,i)=>{const it=DECOR_MAP[d.t];if(!it)return;all.push({z:it.flat?-1e5+d.y:d.y,h:()=>decorSVG({...d,i},selD===i)})});
+  for(let i=0;i<st.plots.length;i++){const pos=posOf(st,i);if(pos)all.push({z:pos[1]+20,h:()=>plotSVG(st,i,hov)})}
+  all.sort((a,b)=>a.z-b.z);
+  for(const o of all)s+=o.h();
   return s;
 }
 function stallInfo(i){const ls=listings.filter(l=>!l.sold&&l.stall===i).sort((a,b)=>tms(a.createdAt)-tms(b.createdAt));return {ls,owner:ls.length?ls[0].sellerUid:null,ownerName:ls.length?ls[0].sellerName:''}}
@@ -1200,10 +1240,10 @@ function stallSVG(i,hl){
   let s=`<g data-stall="${i}" role="button" aria-label="攤位 ${i+1}" stroke="#3A2416" stroke-width="1.4" stroke-linejoin="round">${hl?`<ellipse cx="${x}" cy="${y+8}" rx="58" ry="12" fill="none" stroke="var(--mustard)" stroke-width="3" stroke-dasharray="6 4"/>`:''}<rect x="${x-46}" y="${y-88}" width="5" height="60" fill="#7E5530"/><rect x="${x+41}" y="${y-88}" width="5" height="60" fill="#7E5530"/>`;
   for(let k=0;k<5;k++)s+=`<path d="M${(x-52+k*20.8).toFixed(1)} ${y-98} h20.8 v14 q-10.4 8 -20.8 0z" fill="${k%2?'#F7F4EC':c}"/>`;
   s+=`<rect x="${x-50}" y="${y-30}" width="100" height="30" fill="#B98A57" stroke="#7E5530"/><rect x="${x-54}" y="${y-36}" width="108" height="8" fill="#8A6238"/>`;
-  inf.ls.slice(0,3).forEach((l,k)=>{const lot=lotOf(l),ph=phen(lot.m,l.crop);s+=`<svg x="${x-44+k*30}" y="${y-66}" width="30" height="32" viewBox="-1.5 -1.6 3 3.2" stroke="none">${fruitInner(ph,1,l.crop)}</svg>`});
+  inf.ls.slice(0,3).forEach((l,k)=>{if(l.kind==='item'){s+=`<svg x="${x-44+k*30}" y="${y-66}" width="30" height="32" viewBox="-16 -32 32 36">${itemArt(0,0,l.item)}</svg>`;return}const lot=lotOf(l),ph=phen(lot.m,l.crop);s+=`<svg x="${x-44+k*30}" y="${y-66}" width="30" height="32" viewBox="-1.5 -1.6 3 3.2" stroke="none">${fruitInner(ph,1,l.crop)}</svg>`});
   const t=inf.owner?(inf.owner===uid?'你的攤位':`${inf.ownerName} 的攤位`):'空攤位';
   s+=`<rect x="${x-44}" y="${y-122}" width="88" height="20" rx="4" fill="#F7F4EC" stroke="#7E5530"/><text x="${x}" y="${y-108}" text-anchor="middle" font-size="10" font-weight="700" fill="#2A1A0C" stroke="none" font-family="Noto Sans TC,sans-serif">${esc(t.length>9?t.slice(0,8)+'…':t)}</text>`;
-  if(inf.ls.length)s+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="10" fill="#3A2614" stroke="none" font-family="Noto Sans TC,sans-serif">${inf.ls.length} 包種子</text>`;
+  if(inf.ls.length)s+=`<text x="${x}" y="${y-10}" text-anchor="middle" font-size="10" fill="#3A2614" stroke="none" font-family="Noto Sans TC,sans-serif">${inf.ls.length} 件商品</text>`;
   return s+'</g>';
 }
 function marketWorld(hl){
@@ -1243,6 +1283,7 @@ const lotCache=new Map();
 function lotOf(l){if(!lotCache.has(l.id))lotCache.set(l.id,JSON.parse(l.lot));return lotCache.get(l.id)}
 function renderMarket(){if(scene==='market')renderWorld();if(sheet&&sheet.stall!=null&&sheet.step==='view')renderSheet()}
 function listingCard(l){
+  if(l.kind==='item'){const mine=l.sellerUid===uid;return `<div class="lot"><div class="lot-top">${itemIcon(l.item)}<div><div class="lot-name">${esc(itemName(l.item))} × ${l.count}</div><div class="meta">${itemEff(l.item)}</div><div class="meta">賣家：${esc(l.sellerName||'')}</div></div></div>${mine?`<button class="btn" data-act="scancel" data-id="${l.id}">收回（售價 ${l.price} 金幣）</button>`:`<button class="btn primary" data-act="sbuy" data-id="${l.id}">用 ${l.price} 金幣購買</button>`}</div>`}
   const lot=lotOf(l),ph=phen(lot.m,l.crop),mine=l.sellerUid===uid;
   return `<div class="lot"><div class="lot-top">${fruitSVG(ph,l.crop,64,1,'母株：'+descr(ph,l.crop))}<div><div class="lot-name">${esc(l.name)}</div><div class="meta">${CROPS[l.crop].n}・${l.count} 顆・發芽率 ${Math.round(lot.germ*100)}%</div><div class="meta">${ph.shapeName}・${colorLabel(ph)}・品質 ${ph.quality.toFixed(1)}・${stabName(ph.stab)}</div><div class="meta">來源：${esc(l.source)}</div></div></div>${simsHTML(lot.m,lot.f,l.crop,'種出來可能長這樣')}${mine?`<button class="btn" data-act="scancel" data-id="${l.id}">收回這包（售價 ${l.price} 金幣）</button>`:`<button class="btn primary" data-act="sbuy" data-id="${l.id}">用 ${l.price} 金幣購買</button>`}</div>`;
 }
@@ -1257,14 +1298,24 @@ function stallHTML(){
     h+=lots.length?lots.map(l=>{const ph=phen(l.m,l.crop);return `<button class="pick" data-act="spick" data-lot="${l.id}">${fruitSVG(ph,l.crop,44)}<span><b>${esc(l.name)}</b><span class="meta">${CROPS[l.crop].n}・剩 ${lc(l)} 顆・品質 ${ph.quality.toFixed(1)}・${TIERS[ph.tier]}</span></span></button>`}).join(''):'<p class="note">這個分類沒有種子。</p>';
     return h+`<button class="btn" data-act="sback">返回</button>`;
   }
+  if(sheet.step==='ipick'){
+    const it=state.items||{},have=IKEYS.filter(k=>it[k]>0);
+    h+=`<p class="note">選一種要上架的道具。</p>`;
+    h+=have.length?have.map(k=>`<button class="pick" data-act="ipick" data-k="${k}">${itemIcon(k)}<span><b>${itemName(k)}</b><span class="meta">持有 ${it[k]} 個・${itemEff(k)}</span></span></button>`).join(''):'<p class="note">目前沒有可以上架的道具。到探索世界撿肥料吧。</p>';
+    return h+`<button class="btn" data-act="sback">返回</button>`;
+  }
+  if(sheet.step==='iform'){
+    const k=sheet.ik,n=(state.items||{})[k]||0;if(!n){sheet.step='ipick';return stallHTML()}
+    return h+`<div class="lot-top">${itemIcon(k)}<div><div class="lot-name">${itemName(k)}</div><div class="meta">持有 ${n} 個</div></div></div><div class="regbox sellbox"><label>數量（最多 ${n} 個）<input id="f1" type="number" inputmode="numeric" min="1" max="${n}" value="${esc(sheet.d1)}"></label><label>價格（金幣，整批）<input id="f2" type="number" inputmode="numeric" min="1" value="${esc(sheet.d2)}"></label><div class="err" id="ferr">${sheet.err}</div><div class="row2"><button class="btn primary" data-act="isave">確定上架</button><button class="btn" data-act="sback">返回</button></div></div>`;
+  }
   if(sheet.step==='form'){
     const l=state.lots.find(x=>x.id===sheet.lot);if(!l){sheet.step='pick';return stallHTML()}
     const ph=phen(l.m,l.crop),n=lc(l);
     return h+`<div class="lot-top">${fruitSVG(ph,l.crop,56)}<div><div class="lot-name">${esc(l.name)}</div><div class="meta">${CROPS[l.crop].n}・剩 ${n} 顆</div></div></div><div class="regbox sellbox"><label>數量（最多 ${n} 顆）<input id="f1" type="number" inputmode="numeric" min="1" max="${n}" value="${esc(sheet.d1)}"></label><label>價格（金幣）<input id="f2" type="number" inputmode="numeric" min="1" value="${esc(sheet.d2)}"></label><div class="err" id="ferr">${sheet.err}</div><div class="row2"><button class="btn primary" data-act="ssave">確定上架</button><button class="btn" data-act="sback">返回</button></div></div>`;
   }
-  if(!inf.owner)h+=`<p class="note">這個攤位目前沒人使用。在這裡上架種子就能占用它，全部賣完後攤位會自動空出來，讓別人使用。</p><button class="btn primary" data-act="sstart">在這裡上架種子</button>`;
-  else if(inf.owner===uid)h+=`<p class="note">你有 ${inf.ls.length} 包種子在這裡販售。朋友買走後，金幣會自動入帳。</p><button class="btn primary" data-act="sstart">再上架一包</button>`+inf.ls.map(listingCard).join('');
-  else h+=`<p class="note">${esc(inf.ownerName)} 正在販售 ${inf.ls.length} 包種子。</p>`+inf.ls.map(listingCard).join('');
+  if(!inf.owner)h+=`<p class="note">這個攤位目前沒人使用。在這裡上架種子或道具就能占用它，全部賣完後攤位會自動空出來，讓別人使用。</p><div class="row2"><button class="btn primary" data-act="sstart">上架種子</button><button class="btn primary" data-act="istart">上架道具</button></div>`;
+  else if(inf.owner===uid)h+=`<p class="note">你有 ${inf.ls.length} 件商品在這裡販售。朋友買走後，金幣會自動入帳。</p><div class="row2"><button class="btn primary" data-act="sstart">再上架種子</button><button class="btn primary" data-act="istart">再上架道具</button></div>`+inf.ls.map(listingCard).join('');
+  else h+=`<p class="note">${esc(inf.ownerName)} 正在販售 ${inf.ls.length} 件商品。</p>`+inf.ls.map(listingCard).join('');
   return h;
 }
 function bindStall(){
@@ -1276,7 +1327,22 @@ function bindStall(){
 async function stallAction(b){
   const act=b.dataset.act,i=sheet.stall;
   if(act==='sstart'){sheet.step='pick';renderSheet();return}
-  if(act==='sback'){sheet.step=sheet.step==='form'?'pick':'view';sheet.err='';renderSheet();return}
+  if(act==='sback'){sheet.step=sheet.step==='form'?'pick':sheet.step==='iform'?'ipick':'view';sheet.err='';renderSheet();return}
+  if(act==='istart'){sheet.step='ipick';renderSheet();return}
+  if(act==='ipick'){sheet.ik=b.dataset.k;sheet.step='iform';sheet.d1='1';sheet.d2='';sheet.err='';renderSheet();return}
+  if(act==='isave'){
+    const k=sheet.ik,it=state.items||{},n=it[k]||0;
+    const inf=stallInfo(i);if(inf.owner&&inf.owner!==uid){sheet.err='這個攤位剛被別人占用了，換一個空攤位吧';renderSheet();return}
+    const c=parseInt(sheet.d1,10),price=parseInt(sheet.d2,10);
+    if(!(c>=1&&c<=n)){sheet.err=`數量要在 1 到 ${n} 之間`;renderSheet();return}
+    if(!(price>=1&&price<=999999)){sheet.err='請輸入 1 以上的價格';renderSheet();return}
+    b.disabled=true;
+    try{
+      await db.collection('listings').add({kind:'item',item:k,crop:'',name:itemName(k),source:'道具',sellerUid:uid,sellerName:myName(),price,count:c,stall:i,lot:'{}',sold:false,createdAt:TS()});
+      it[k]-=c;save();renderAll();sheet.step='view';renderSheet();toast(`已上架 ${c} 個${itemName(k)}，售價 ${price} 金幣`);
+    }catch(e){sheet.err='上架失敗，請檢查網路後再試一次';renderSheet()}
+    return;
+  }
   if(act==='spick'){sheet.lot=+b.dataset.lot;sheet.step='form';sheet.d1='1';sheet.d2='';sheet.err='';renderSheet();return}
   if(act==='ssave'){
     const l=state.lots.find(x=>x.id===sheet.lot);if(!l)return;
@@ -1298,6 +1364,7 @@ async function stallAction(b){
     b.disabled=true;
     try{
       await db.runTransaction(async tx=>{const ref=db.collection('listings').doc(l.id),d=await tx.get(ref);if(!d.exists||d.data().sold)throw new Error('gone');tx.update(ref,{sold:true,buyerUid:uid,buyerName:myName(),soldAt:TS()})});
+      if(l.kind==='item'){state.coins-=l.price;if(!state.items)state.items={};state.items[l.item]=(state.items[l.item]||0)+l.count;save();renderAll();toast(`買到 ${l.count} 個${itemName(l.item)}`);return}
       const lot=lotOf(l);state.coins-=l.price;
       state.lots.unshift({id:state.nextLot++,lid:'L'+(state.nextLid++),crop:l.crop,name:l.name,source:`向 ${l.sellerName} 購買`,m:lot.m,f:lot.f,count:lot.seeds?0:lot.count,seeds:lot.seeds||undefined,germ:lot.germ});
       save();renderAll();toast(`買到 ${l.count} 顆「${l.name}」，已放進種子袋`);
@@ -1309,6 +1376,7 @@ async function stallAction(b){
     b.disabled=true;
     try{
       await db.collection('listings').doc(l.id).delete();
+      if(l.kind==='item'){if(!state.items)state.items={};state.items[l.item]=(state.items[l.item]||0)+l.count;save();renderAll();toast('已收回，道具放回背包');return}
       const lot=lotOf(l);
       state.lots.unshift({id:state.nextLot++,lid:'L'+(state.nextLid++),crop:l.crop,name:l.name,source:l.source,m:lot.m,f:lot.f,count:lot.seeds?0:lot.count,seeds:lot.seeds||undefined,germ:lot.germ});
       save();renderAll();toast('已收回，種子放回種子袋');
@@ -1338,6 +1406,7 @@ document.getElementById('iconbar').addEventListener('click',e=>{
   if(a==='market')return scene==='market'?goFarm():goMarket();
   if(a==='home')return goFarm();
   if(a==='avatar')return openAvatar();
+  if(a==='build')return openBuild();
   if(a==='orders'){sheet={orders:true};renderSheet();openSheetUI()}
 });
 function renderHUD(){
@@ -1347,11 +1416,37 @@ function renderHUD(){
   document.getElementById('ibHome').hidden=!(viewing||scene==='explore');
   const own=scene==='farm'&&!viewing;
   document.getElementById('fertBtn').hidden=!own;document.getElementById('waterAll').hidden=!own;
-  document.getElementById('ibDecor').hidden=!own;
+  document.getElementById('ibDecor').hidden=!own;document.getElementById('ibBuild').hidden=!own;
+}
+
+
+// ===== 建設農地 =====
+function openBuild(){if(scene!=='farm'||viewing){toast('只能在自己的農場建設');return}sheet={build:true};renderSheet();openSheetUI()}
+function buildHTML(){
+  const n=plotCount(state),m=curMe(),[x,y]=snapPos(m.x,m.y),err=n>=PLOT_MAX?`農地最多 ${PLOT_MAX} 塊`:plotSpotErr(state,x,y,-1);
+  return `<h2>建設新農地</h2><p class="note">新農地會建在角色腳邊，對齊旁邊的格子。先走到想要的位置再按建設；空的農地之後可以移動或拆除。</p><div class="lot"><div class="lot-name">一塊農地</div><div class="meta">花費 ${PLOT_COST} 金幣・目前 ${n} 塊／上限 ${PLOT_MAX} 塊</div>${err?`<p class="err">${err}</p>`:''}</div><button class="btn primary" data-act="build" ${err?'disabled':''}>花 ${PLOT_COST} 金幣在腳邊建設</button><button class="btn" data-act="close">取消</button>`;
+}
+function buildAction(b){
+  const a=b.dataset.act;if(a==='close')return closeSheet();if(a!=='build')return;
+  const m=curMe(),[x,y]=snapPos(m.x,m.y);
+  if(plotCount(state)>=PLOT_MAX){toast(`農地最多 ${PLOT_MAX} 塊`);return}
+  const e=plotSpotErr(state,x,y,-1);if(e){toast(e);renderSheet();return}
+  if(!isInf()&&state.coins<PLOT_COST){toast('金幣不夠');return}
+  if(!isInf())state.coins-=PLOT_COST;
+  let i=state.plotPos.findIndex((q,j)=>!q&&!state.plots[j]);
+  if(i<0){i=state.plotPos.length;state.plotPos.push(null);state.plots.push(null)}
+  state.plotPos[i]=[x,y];state.plots[i]=null;
+  save();renderAll();renderCoins();closeSheet();toast(`建好一塊新農地了（第 ${i+1} 塊）`);
+}
+const isInf=()=>false;
+function plotMove(i){
+  const m=curMe(),[x,y]=snapPos(m.x,m.y),e=plotSpotErr(state,x,y,i);
+  if(e){toast(e);return false}
+  state.plotPos[i]=[x,y];toast('農地移過來了');return true;
 }
 
 // ===== 裝飾面板與編輯 =====
-let decorCat='圍籬';
+let decorCat='標示';
 function renderDecorPanel(){
   document.getElementById('decorCats').innerHTML=DECOR_CATS.map(c=>`<button class="fchip" data-dc2="${c}" aria-pressed="${c===decorCat}">${c}</button>`).join('');
   document.getElementById('decorItems').innerHTML=DECOR.filter(d=>d.cat===decorCat).map(d=>`<button class="ditem" data-item="${d.k}"><svg viewBox="-30 -50 60 60" width="52" height="52" aria-hidden="true">${d.f(0,0,'')}</svg><span>${d.n}</span></button>`).join('');
@@ -1361,32 +1456,33 @@ document.getElementById('p-decor').addEventListener('click',e=>{
   const it=e.target.closest('[data-item]');if(!it)return;
   if(scene!=='farm'||viewing){toast('只能在自己的農場佈置');return}
   const m=curMe();
-  if(!inYard(m)){toast('先走到農場下方的庭院，再選裝飾放在腳邊');closePanel();return}
-  if(state.decor.length>=200){toast('裝飾最多 200 個');return}
+  if(!inYard(m)){toast('這裡太靠近農場邊緣了，往裡面走一點');closePanel();return}
+  if(state.decor.length>=400){toast('裝飾最多 400 個');return}
   state.decor.push({t:it.dataset.item,x:Math.round(m.x),y:Math.round(m.y-14)});
   save();renderWorld();closePanel();toast(`放好「${DECOR_MAP[it.dataset.item].n}」了，點它可以移動或收起`);
-  if(it.dataset.item==='sign')openSign(state.decor.length-1);
+  if(isSign(it.dataset.item))openSign(state.decor.length-1);
 });
-const inYard=p=>p.x>=YARD.x0&&p.x<=YARD.x1&&p.y>=YARD.y0&&p.y<=YARD.y1+20;
+const inYard=p=>p.x>=40&&p.x<=WORLD.farm.W-40&&p.y>=110&&p.y<=WORLD.farm.H-60;
+const isSign=t=>t==='sign'||t==='signS';
 function renderDecorEdit(){
   const el=document.getElementById('decorEdit');
   if(selDecor==null||!state.decor[selDecor]){el.hidden=true;return}
   const d=state.decor[selDecor];el.hidden=false;
-  el.innerHTML=`<b>${DECOR_MAP[d.t].n}</b><button class="mini big" data-de="here">移到我旁邊</button>${d.t==='sign'?'<button class="mini big" data-de="text">改文字</button>':''}<button class="mini big" data-de="del">收起</button><button class="mini big" data-de="done">完成</button>`;
+  el.innerHTML=`<b>${DECOR_MAP[d.t].n}</b><button class="mini big" data-de="here">移到我旁邊</button>${isSign(d.t)?'<button class="mini big" data-de="text">改文字</button>':''}<button class="mini big" data-de="del">收起</button><button class="mini big" data-de="done">完成</button>`;
 }
 document.getElementById('decorEdit').addEventListener('click',e=>{
   const b=e.target.closest('[data-de]');if(!b||selDecor==null)return;const d=state.decor[selDecor];if(!d)return;
   const a=b.dataset.de;
-  if(a==='here'){const m=curMe();if(!inYard(m)){toast('要站在庭院裡才能移過來');return}d.x=Math.round(m.x);d.y=Math.round(m.y-14);save()}
+  if(a==='here'){const m=curMe();if(!inYard(m)){toast('這裡太靠近農場邊緣了');return}d.x=Math.round(m.x);d.y=Math.round(m.y-14);save()}
   if(a==='text')return openSign(selDecor);
   if(a==='del'){state.decor.splice(selDecor,1);selDecor=null;save();toast('已收起')}
   if(a==='done')selDecor=null;
   renderWorld();renderDecorEdit();
 });
 function openSign(i){sheet={sign:i,draft:state.decor[i].txt||'',err:''};renderSheet();openSheetUI()}
-function signHTML(){return `<h2>招牌文字</h2><p class="note">最多 8 個字。</p><div class="regbox"><input id="signIn" maxlength="8" value="${esc(sheet.draft)}" aria-label="招牌文字" aria-describedby="signErr"><div class="err" id="signErr">${sheet.err}</div></div><button class="btn primary" data-act="signsave">儲存</button><button class="btn" data-act="close">取消</button>`}
+function signHTML(){const d=state.decor[sheet.sign];return `<h2>${d&&d.t==='signS'?'小告示牌':'大告示牌'}的文字</h2><p class="note">2 到 8 個字，寫什麼都可以，例如「南瓜田」「父本」「母本」。來拜訪的朋友也看得到。</p><div class="regbox"><input id="signIn" maxlength="8" value="${esc(sheet.draft)}" aria-label="告示牌文字" aria-describedby="signErr"><div class="err" id="signErr">${sheet.err}</div></div><button class="btn primary" data-act="signsave">儲存</button><button class="btn" data-act="close">取消</button>`}
 function bindSign(){const i=document.getElementById('signIn');if(i){i.focus();i.addEventListener('input',()=>{sheet.draft=i.value;if(sheet.err){sheet.err='';document.getElementById('signErr').textContent=''}})}}
-function signAction(b){if(b.dataset.act!=='signsave')return;const v=sheet.draft.trim();if(!v){sheet.err='請輸入文字';renderSheet();return}if(glen(v)>8){sheet.err='最多 8 個字';renderSheet();return}const d=state.decor[sheet.sign];if(d)d.txt=v;save();renderWorld();closeSheet()}
+function signAction(b){if(b.dataset.act==='close')return closeSheet();if(b.dataset.act!=='signsave')return;const v=sheet.draft.trim();if(glen(v)<2||glen(v)>8){sheet.err='請輸入 2 到 8 個字';renderSheet();return}const d=state.decor[sheet.sign];if(d)d.txt=v;save();renderWorld();closeSheet()}
 
 
 // ===== 探索世界 =====
@@ -1602,12 +1698,12 @@ function goMarket(){
   if(viewing){if(viewing.unsub)viewing.unsub();viewing=null}
   selDecor=null;renderDecorEdit();scene='market';marketMe={x:230,y:690};hoverPlot=null;hoverStall=null;
   joinFarm('market');renderHUD();renderWorld();renderChars();updateCam();refreshAct();
-  toast('來到市集了！走到攤位旁按「攤位」就能上架或購買');
+  toast('來到市集了！走到攤位旁按「攤位」就能上架種子、道具或購買');
 }
 function goFarm(){
   if(viewing){if(viewing.unsub)viewing.unsub();viewing=null}
   scene='farm';hoverPlot=null;hoverStall=null;
-  if(state.me&&state.me.y>860)state.me.y=840;
+  if(state.me&&state.me.y>2110)state.me.y=2090;
   joinFarm(uid);renderHUD();renderWorld();renderChars();updateCam();refreshAct();
 }
 function enterVisit(fu){
@@ -1617,7 +1713,7 @@ function enterVisit(fu){
   scene='farm';selDecor=null;renderDecorEdit();
   viewing={uid:fu,name:(p&&p.name)||'朋友',st:null};
   viewing.unsub=db.collection('players').doc(fu).onSnapshot(s=>{if(!viewing||viewing.uid!==fu)return;try{if(s.exists&&s.data().save)viewing.st=migrate(JSON.parse(s.data().save))}catch(e){}renderWorld()},()=>{});
-  visitMe={x:230,y:840};
+  visitMe={x:550,y:2100};
   joinFarm(fu);renderHUD();renderWorld();renderChars();updateCam();refreshAct();
   toast(`來到 ${viewing.name} 的農場，四處走走吧`);
 }
@@ -1666,7 +1762,8 @@ function nearest(){
     const [gx,gy]=GATE.market;if(Math.hypot(gx-m.x,gy-m.y)<56)return {t:'gate'};return null;
   }
   const [gx,gy]=GATE.farm;if(Math.hypot(gx-m.x,gy-m.y)<56)return {t:'gate'};
-  let best=-1,b2=1e9;for(let i=0;i<NPLOTS;i++){const [x,y]=center(i),dx=x-m.x,dy=(y-m.y)*1.7,d2=dx*dx+dy*dy;if(d2<b2){b2=d2;best=i}}
+  const fst=viewing?viewing.st:state;if(!fst)return null;
+  let best=-1,b2=1e9;for(let i=0;i<fst.plots.length;i++){const pos=posOf(fst,i);if(!pos)continue;const [x,y]=pos,dx=x-m.x,dy=(y-m.y)*1.7,d2=dx*dx+dy*dy;if(d2<b2){b2=d2;best=i}}
   return b2<48*48?{t:'plot',i:best}:null;
 }
 function actInfo(n){
@@ -1769,7 +1866,7 @@ const TUT=[
   {t:'澆了水就會慢慢長大，每個階段都要再澆一次。想快一點，可以在右邊「設定」開啟加速測試。等它開花吧。',ev:'flower'},
   {t:'開花了！走過去按「授粉」，可以自己授粉，或和另一株同時開花的同種作物雜交。',ev:'pollinate'},
   {t:'再澆水讓果實長大，成熟後按「收成」，可以賣掉換金幣，或取種留著培育。',ev:'harvest'},
-  {t:'做得很好！右邊的圖示可以打開種子袋、圖鑑、朋友和裝飾。走到農場最下面的大門，或按「市集」，就能去市集擺攤、和大家見面。完成「訂單」還有金幣可拿喔！',btn:'開始玩'}
+  {t:'做得很好！右邊的圖示可以打開種子袋、圖鑑、朋友和裝飾；按「建設」可以花一點金幣，在腳邊開墾新農地。走到農場最下面的大門，或按「市集」，就能去市集擺攤、和大家見面。完成「訂單」還有金幣可拿喔！',btn:'開始玩'}
 ];
 function tutRender(){
   const el=document.getElementById('tut'),t=state&&state.tut;
@@ -1787,7 +1884,7 @@ function harvested(ph){tutEv('harvest');orderDone('harvest');if(ph&&ph.cname==='
 function orderDone(k){if(!state.orders)state.orders={};if(!state.orders[k]){state.orders[k]=1;save();toast('完成了一張訂單，到「訂單」領取獎勵');renderOrdersBtn()}}
 function renderOrdersBtn(){const n=ORDERS.filter(o=>(state.orders||{})[o.k]===1).length,done=ORDERS.every(o=>(state.orders||{})[o.k]===2);document.getElementById('ordersBtn').hidden=done;const bg=document.getElementById('ordersBadge');bg.hidden=!n;bg.textContent=n}
 document.getElementById('ordersBtn').onclick=()=>{sheet={orders:true};renderSheet();sheetEl.classList.add('open');bd.style.display='block'};
-function ordersHTML(){const o=state.orders||{};return `<h2>入門訂單</h2><p class="note">農會阿伯的委託，完成後可以領取金幣。</p>`+ORDERS.map(x=>`<div class="lot"><div class="lot-name">${x.t}</div><div class="meta">獎勵 ${x.r} 金幣</div>${o[x.k]===2?'<p class="note">已領取</p>':o[x.k]===1?`<button class="btn primary" data-act="claim" data-k="${x.k}">領取 ${x.r} 金幣</button>`:'<p class="note">進行中</p>'}</div>`).join('')+'<button class="btn" data-act="close">關閉</button>'}
+function ordersHTML(){const o=state.orders||{};return `<h2>入門訂單</h2><div class="tuth" style="margin-bottom:6px"><img class="gp" src="${document.querySelector('.tuth .gp').src}" width="44" height="44" alt="">農會阿伯的委託，完成後可以領取金幣。</div>`+ORDERS.map(x=>`<div class="lot"><div class="lot-name">${x.t}</div><div class="meta">獎勵 ${x.r} 金幣</div>${o[x.k]===2?'<p class="note">已領取</p>':o[x.k]===1?`<button class="btn primary" data-act="claim" data-k="${x.k}">領取 ${x.r} 金幣</button>`:'<p class="note">進行中</p>'}</div>`).join('')+'<button class="btn" data-act="close">關閉</button>'}
 function orderAction(b){if(b.dataset.act!=='claim')return;const x=ORDERS.find(o=>o.k===b.dataset.k);if(!x||state.orders[x.k]!==1)return;state.orders[x.k]=2;state.coins+=x.r;save();renderCoins();renderOrdersBtn();renderSheet();toast(`領取了 ${x.r} 金幣`)}
 let loop=null;
 const loginEl=document.getElementById('login');
