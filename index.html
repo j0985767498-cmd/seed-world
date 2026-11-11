@@ -645,7 +645,12 @@ const pname=p=>`${p.name} #${p.no||1}`;
 function stageLabel(p){return {seedling:'幼苗期',flower:'開花期',fruit:'結果期',ripe:'可以採收'}[p.stage]}
 function renderCoins(){document.getElementById('coins').textContent=Math.round(state.coins).toLocaleString('zh-TW')}
 
-function simsHTML(m,f,crop,label){return `<div class="sims"><span class="lbl">${label}</span>${[0,1,2,3].map(()=>fruitSVG(phen(child(m,f).g,crop),crop,44)).join('')}</div>`}
+// 預覽專用：同一對親本永遠產生同樣的 4 張圖，且不套用突變與特殊色突變（實際播種時仍照常獨立判定）
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function seededRnd(a){return function(){a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const gkey=g=>LOCI.map(L=>gl(g,L.k).join(',')).join('|');
+function previewChild(m,f,r){const g={};for(const L of LOCI)g[L.k]=[gl(m,L.k)[r()<.5?0:1],gl(f,L.k)[r()<.5?0:1]];return g}
+function simsHTML(m,f,crop,label){const r=seededRnd(hashStr(crop+'#'+gkey(m)+'#'+gkey(f)));return `<div class="sims"><span class="lbl">${label}</span>${[0,1,2,3].map(()=>fruitSVG(phen(previewChild(m,f,r),crop),crop,44)).join('')}</div>`}
 function filtersHTML(cur,attr){return ['all',...CROP_KEYS].map(k=>`<button class="fchip" ${attr}="${k}" aria-pressed="${cur===k}">${k==='all'?'全部':CROPS[k].n}</button>`).join('')}
 let bagSort='new',renaming=null,selling=null;
 function lotKey(l,k){const ph=phen(l.m,l.crop);return k==='tier'?ph.tier*1000+ph.total:k==='total'?ph.total:k==='quality'?ph.quality:k==='perf'?ph.perf:k==='stab'?ph.stab:k==='count'?lc(l):0}
