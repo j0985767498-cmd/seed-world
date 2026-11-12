@@ -1694,7 +1694,7 @@ function buildAction(b){
 const isInf=()=>TEST_MODE;
 // ===== 測試模式 =====
 const TEST_MODE=true;                 // 測試期間開啟；正式版改成 false
-const ADMIN_EMAILS=[];                // 管理員的 Google 帳號 email，例如 ['you@gmail.com']
+const ADMIN_EMAILS=[j0985767498@gmail.com];                // 管理員的 Google 帳號 email，例如 ['you@gmail.com']
 const SPEEDS=[1,5,20,60];
 const isAdmin=()=>!!(auth.currentUser&&ADMIN_EMAILS.includes(auth.currentUser.email));
 const tScale=()=>TEST_MODE?Math.max(1,state.speed||1):1;
